@@ -1,13 +1,14 @@
-const { HTTP_PORT } = require('./config/dev');
-const { HTTPS_PORT } = require('./config/prod');
-
 var PROJECT_DIR = process.env.PROJECT_DIR                           //load the project dir from env variables (set in .envrc)
 
-var config = require(PROJECT_DIR + '/src/app/config/common');       //load the main config file
-var colours = require(PROJECT_DIR + '/src/app/utill/colours');      //load colour schemes to use with console.log()
+var config = require(PROJECT_DIR + '/src/app/config/common')        //load the main config file
+var colours = require(PROJECT_DIR + '/src/app/util/colours')        //load colour schemes to use with console.log()
 var argv = require('yargs/yargs')(process.argv.slice(2)).argv       //load and parse the command line arguments
 
+const express = require('express')                                  //express is a web framework that I will be using
+const http  = require("http")                                       //http module is required to deal with http requests
 
+
+//// INITIAL CLI CONFIG ////
 
 //if a valid mode arg was passed set it as the RUN_MODE
 // -m stands for mode (dev, prod), -p stands for the http port, -s stands for the https port
@@ -52,5 +53,17 @@ if (argv.s != undefined && typeof argv.s == "number"){
 } else {
     console.log(colours.FgGreen, `HTTPS port ${config.HTTPS_PORT} set from config`)
 }
+
+//initlise and express app object
+const app = express()
+
+//load the routes from seperate files and pass them to express to use
+app.use(require(PROJECT_DIR + '/src/app/routes/navigation.js'))
+
+//creating an http webserver
+const http_server = http.createServer(app)
+
+//listen for requests on the http port
+http_server.listen(config.HTTP_PORT)
 
 
