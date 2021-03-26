@@ -1,11 +1,29 @@
 var PROJECT_DIR = process.env.PROJECT_DIR                           //load the project dir from env variables (set in .envrc)
 
 var config = require(PROJECT_DIR + '/src/app/config/common')        //load the main config file
+var secrets = require(PROJECT_DIR + '/src/app/config/secrets')      //load allof the secrets
 var colours = require(PROJECT_DIR + '/src/app/util/colours')        //load colour schemes to use with console.log()
 var argv = require('yargs/yargs')(process.argv.slice(2)).argv       //load and parse the command line arguments
 
 const express = require('express')                                  //express is a web framework that I will be using
 const http  = require("http")                                       //http module is required to deal with http requests
+const https = require('https')                                      //https module is required to deal with https requests
+const fs = require('fs')
+const colour = require('./util/colours')
+
+var SSL_DISABLED = true
+
+if (argv.d != "false"){
+    var SSL_DISABLED = false
+
+    var privateKey = fs.readFileSync(secrets.SSL_KEY);
+    var certificate = fs.readFileSync(secrets.SSL_CERT);
+
+    var ssl_creds = {
+        key: privateKey,
+        cert: certificate
+    }
+} 
 
 
 //// INITIAL CLI CONFIG ////
@@ -54,16 +72,53 @@ if (argv.s != undefined && typeof argv.s == "number"){
     console.log(colours.FgGreen, `HTTPS port ${config.HTTPS_PORT} set from config`)
 }
 
+
+
 //initlise and express app object
 const app = express()
 
-//load the routes from seperate files and pass them to express to use
+//load the naviagation routes
 app.use(require(PROJECT_DIR + '/src/app/routes/navigation.js'))
 
-//creating an http webserver
-const http_server = http.createServer(app)
-
-//listen for requests on the http port
-http_server.listen(config.HTTP_PORT)
 
 
+if (!SSL_DISABLED){
+    const https_server = https.createServer(ssl_creds, app)
+
+    //listen for requests on the https port
+    https_server.listen(config.HTTPS_PORT)
+
+    console.log(colours.FgGreen, "Started the HTTPS Server")
+
+    //creating an http server
+    const http_server = http.createServer((req, res) => {
+        redirect_url = 'https://www.habdash.org' + req.url;
+        res.writeHead(301,{Location: redirect_url});
+        res.end();
+    });
+
+    //listen for requests on the http port
+    http_server.listen(config.HTTP_PORT)
+
+    console.log(colours.FgCyan, "Redirecting http -> https")
+
+
+
+} else{
+    console.log(colours.FgMagenta, "HTTPs Server is disabled")
+
+    //creating an http webserver
+    const http_server = http.createServer(app)
+
+    //listen for requests on the http port
+    http_server.listen(config.HTTP_PORT)
+
+    console.log(colours.FgGreen, "Started the HTTP Server")
+}
+
+
+
+
+
+
+console.log(colours.FgGreen)

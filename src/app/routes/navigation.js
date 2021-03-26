@@ -5,13 +5,13 @@ var router = express.Router();
 var PROJECT_DIR = process.env.PROJECT_DIR  
 
 // Require controller modules.
-var navigation_controller = require(PROJECT_DIR + "/src/app/handlers/navigationHandler.js");
+var navigation_handler = require(PROJECT_DIR + "/src/app/handlers/navigationHandler.js");
 
 
 //root route
-router.get("/", navigation_controller.hello_world);
+router.get("/", navigation_handler.hello_world);
 //home route
-router.get("/home", navigation_controller.hello_world);
+router.get("/home", navigation_handler.hello_world);
 
 //export everything out
 module.exports = router;
