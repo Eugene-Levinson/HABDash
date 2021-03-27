@@ -13,7 +13,7 @@ const colour = require('./util/colours')
 
 var SSL_DISABLED = true
 
-if (argv.d != "false"){
+if (argv.d != "true"){
     var SSL_DISABLED = false
 
     var privateKey = fs.readFileSync(secrets.SSL_KEY);
@@ -117,8 +117,3 @@ if (!SSL_DISABLED){
 }
 
 
-
-
-
-
-console.log(colours.FgGreen)
