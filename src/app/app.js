@@ -9,7 +9,9 @@ const express = require('express')                                  //express is
 const http  = require("http")                                       //http module is required to deal with http requests
 const https = require('https')                                      //https module is required to deal with https requests
 const fs = require('fs')
-const colour = require('./util/colours')
+
+const expressLayout = require("express-ejs-layouts")
+
 
 var SSL_DISABLED = true
 
@@ -24,6 +26,7 @@ if (argv.d != "true"){
         cert: certificate
     }
 } 
+
 
 
 //// INITIAL CLI CONFIG ////
@@ -77,8 +80,25 @@ if (argv.s != undefined && typeof argv.s == "number"){
 //initlise and express app object
 const app = express()
 
+//set Express to use ejs layouts
+app.use(expressLayout);
+app.set("view engine", "html");
+app.engine('html', require('ejs').renderFile);
+app.set('layout', 'layouts/common.ejs');
+app.set('views', PROJECT_DIR + '/src/app/static/views');
+
+
+
 //load the naviagation routes
 app.use(require(PROJECT_DIR + '/src/app/routes/navigation.js'))
+
+//load the util routes
+app.use(require(PROJECT_DIR + '/src/app/routes/util.js'))
+
+//load data processing routes
+app.use(require(PROJECT_DIR + '/src/app/routes/data.js'))
+
+
 
 
 

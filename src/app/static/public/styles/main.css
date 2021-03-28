@@ -1,0 +1,28 @@
+
+
+body {
+    background-color:  	rgb(250,250,250); 
+    height: 100%;
+    position: relative;
+}
+
+html {
+    height: 100%;
+}
+
+#wrap {
+    min-height: 100%;
+  }
+  
+#main {
+    overflow:auto;
+    padding-bottom: 60px; /* this needs to be bigger than footer height*/
+    min-width: 100%;
+}
+  
+.footer {
+    margin-top: -53px;
+    background-color: #3e3f3a;
+    color: whitesmoke
+  } 
+

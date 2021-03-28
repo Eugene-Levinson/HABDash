@@ -9,9 +9,11 @@ var navigation_handler = require(PROJECT_DIR + "/src/app/handlers/navigationHand
 
 
 //root route
-router.get("/", navigation_handler.hello_world);
+router.get("/", navigation_handler.homePage);
 //home route
-router.get("/home", navigation_handler.hello_world);
+router.get("/home", navigation_handler.homePage);
+//register route
+router.get("/register", navigation_handler.registerPage);
 
 //export everything out
 module.exports = router;
