@@ -12,7 +12,7 @@ html {
 
 #wrap {
     min-height: 100%;
-  }
+}
   
 #main {
     overflow:auto;
@@ -21,8 +21,27 @@ html {
 }
   
 .footer {
-    margin-top: -53px;
+    margin-top: -53px; /* height of the footer*/
     background-color: #3e3f3a;
-    color: whitesmoke
-  } 
+    color: whitesmoke;
+} 
+
+.content-wraper {
+    margin-top: 20px;
+}
+
+.required {
+    color: red;
+}
+
+.text-box{
+    text-align: center;
+    background-color:white;
+    margin: 10px;
+    border-style:solid;
+    border-width: 1px;
+    border-color: #f3f3f3;
+    border-radius: 2px;
+}
+
 

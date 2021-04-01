@@ -2,7 +2,7 @@ var express = require("express");
 var router = express.Router();
 
 //load project dir path
-var PROJECT_DIR = process.env.PROJECT_DIR  
+var PROJECT_DIR = process.env.PROJECT_DIR;  
 
 // Require controller modules.
 var navigation_handler = require(PROJECT_DIR + "/src/app/handlers/navigationHandler.js");
@@ -14,6 +14,8 @@ router.get("/", navigation_handler.homePage);
 router.get("/home", navigation_handler.homePage);
 //register route
 router.get("/register", navigation_handler.registerPage);
+//login route
+router.get("/login", navigation_handler.loginPage);
 
 //export everything out
 module.exports = router;

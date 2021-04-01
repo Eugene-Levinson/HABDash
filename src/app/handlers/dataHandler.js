@@ -5,3 +5,9 @@ module.exports.registerNewUser = function(req, res){
     res.send(200)
     
  }
+
+ //process user login request
+module.exports.loginUser = function(req, res){
+    res.send(200)
+    
+ }

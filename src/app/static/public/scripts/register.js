@@ -3,7 +3,6 @@ function verify_input(){
     var name_field = document.getElementById('nameInput')
     var surname_field = document.getElementById('surnameInput')
     var email_field = document.getElementById('emailInput')
-    var callsign_field = document.getElementById('CSInout')
     var password_field = document.getElementById('passwordInput')
     var password2_field = document.getElementById('password2Input')
     var rem_me_field = document.getElementById('rem_me')

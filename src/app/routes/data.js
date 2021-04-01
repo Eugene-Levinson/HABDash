@@ -6,7 +6,10 @@ var PROJECT_DIR = process.env.PROJECT_DIR
 
 var data_handler = require(PROJECT_DIR + "/src/app/handlers/dataHandler.js");
 
-//register route
+//register data route
 router.post("/register", data_handler.registerNewUser);
+
+//login data route
+router.post("/login", data_handler.loginUser);
 
 module.exports = router;
