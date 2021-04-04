@@ -6,9 +6,9 @@ This is the repository that holds all of my source code for my A-level CS NEA
 
 # Server setup and deployment
 
-This section describes the step by step process of setting up the environment and deplying the HABDash webserver. This is not something that a user of HABDash would ever need to do but for those who want to set a copy of this up for some reason it might be usefull
+This section describes the step by step process of setting up the environment and deploying the HABDash webserver. This is not something that a user of HABDash would ever need to do but for those who want to set a copy of this up for some reason it might be useful.
 
-**Please note**: that this was originally develped and set up on Ubuntu 20.04 and therefore alot of commands bellow might not matcht the exact commands for other systems (for example apt).
+**Please note**: that this was originally develped and set up on Ubuntu 20.04 and therefore alot of commands bellow might not match the exact commands for other systems (for example apt).
 
 ## Install git
 
@@ -19,7 +19,7 @@ This section describes the step by step process of setting up the environment an
 ## Clone the repository
 
 `git@github.com:Eugene-Levinson/HABDash.git`
-SS
+SSH
 <br> 
 
 ## Set up direnv
@@ -29,7 +29,7 @@ SS
 Add the folwing to `~/.bashrc`  
 `eval "$(direnv hook bash)"`
 
-If you are not using bash refere to direnv documentation
+If you are not using bash refer to direnv documentation
 
 `cd HABDash`  
 `direnv allow .`
@@ -42,7 +42,7 @@ If you are not using bash refere to direnv documentation
 
 ## Install node packages
 
-`nmp install`
+`npm install`
 
 ## Start the server
 
