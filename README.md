@@ -1,5 +1,3 @@
-
-
 # HABDash
 
 This is the repository that holds all of my source code for my A-level CS NEA  
@@ -14,13 +12,9 @@ This section describes the step by step process of setting up the environment an
 
 `sudo apt-get install git`
 
-
-
 ## Clone the repository
 
 `git@github.com:Eugene-Levinson/HABDash.git`
-SSH
-<br> 
 
 ## Set up direnv
   
@@ -32,9 +26,7 @@ Add the folwing to `~/.bashrc`
 If you are not using bash refer to direnv documentation
 
 `cd HABDash`  
-`direnv allow .`
-
-<br> 
+`direnv allow .` 
 
 ## Install all other required dependencies
   
