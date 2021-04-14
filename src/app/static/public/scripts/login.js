@@ -25,11 +25,8 @@ function verify_input(){
 
     }
 
+    //if the inputs are valid then we submitt the code to the server for authentication
     if (inputs_are_valid){
         document.getElementById("login_form").submit(); 
     }
-    
-
-    
-
 }

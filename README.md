@@ -4,9 +4,9 @@ This is the repository that holds all of my source code for my A-level CS NEA
 
 # Server setup and deployment
 
-This section describes the step by step process of setting up the environment and deploying the HABDash webserver. This is not something that a user of HABDash would ever need to do but for those who want to set a copy of this up for some reason it might be useful.
+This section describes the step by step process of setting up the environment and deploying the HABDash webserver. This is not something that a user of HABDash would ever need to do, but for those who want to set a copy of this up for some reason it might be useful.
 
-**Please note**: that this was originally develped and set up on Ubuntu 20.04 and therefore alot of commands bellow might not match the exact commands for other systems (for example apt).
+**Please note**: that this set up is for Ubuntu 20.04.
 
 ## Install git
 
@@ -25,8 +25,9 @@ Add the folwing to `~/.bashrc`
 
 If you are not using bash refer to direnv documentation
 
-`cd HABDash`  
-`direnv allow .` 
+`cd HABDash`
+
+`direnv allow .`
 
 ## Install all other required dependencies
   
@@ -43,4 +44,5 @@ If you are not using bash refer to direnv documentation
 Optional paramters:  
 `-m` => mode `dev` or `prod` (default set in src/app/config/common.js)  
 `-p` => http port (default set prod and dev configs)  
-`-s` => https port (default set in prod and dev config)
+`-s` => https port (default set in prod and dev config)  
+`-d` => when set to `true` disables https and runs the server in http only mode
