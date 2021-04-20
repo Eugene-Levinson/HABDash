@@ -2,7 +2,13 @@
 
 # HABDash
 
-This is the repository that holds all of my source code for my A-level CS NEA  
+This is the repository that holds all of my source code for my A-level CS NEA
+
+# Backlog (stuff to adjust when I have time)
+- Redesign the 404 page to look pretty  
+- Make this readme pretty
+
+<br>
 
 # Server setup and deployment
 
