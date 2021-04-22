@@ -48,7 +48,7 @@ async function sendsql(con, some_sql){
 }
 
 async function generate_tables(con){
-    //create the users table
+    //create the users table and the cookies table
     try {
         sql_code = `CREATE TABLE Users (
             UID int NOT NULL AUTO_INCREMENT,
@@ -74,8 +74,6 @@ async function generate_tables(con){
         await sendsql(con, sql_code)
         console.log("Created 'Cookies' table")
 
-
-
     } catch(e){console.log(e)}
 }
 
@@ -87,7 +85,7 @@ async function main(){
 
     //try to connect to the SQL server
     try {
-        var con = await connectdb(secrets.DB_HOST, secrets.DB_USER, secrets.PASSWORD)
+        var con = await connectdb(secrets.DB_HOST, secrets.DB_USER, secrets.DB_PASSWORD)
         console.log("Connected to the SQL server")
 
     } catch(e){console.log(e)}

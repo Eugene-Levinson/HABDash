@@ -7,6 +7,10 @@ This is the repository that holds all of my source code for my A-level CS NEA
 # Backlog (stuff to adjust when I have time)
 - Redesign the 404 page to look pretty  
 - Make this readme pretty
+- make the database creation script add the name of the new db to config
+- write an pre-check function that checks that db a connection to db can be made before webserver is started
+- add TOS button to register.html and make it required - verify by both page and server
+- switch the createdb script to mysql-async
 
 <br>
 

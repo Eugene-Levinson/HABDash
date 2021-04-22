@@ -12,6 +12,8 @@ const fs = require('fs')
 
 const expressLayout = require("express-ejs-layouts")
 
+const bodyParser = require('body-parser');
+
 
 var SSL_DISABLED = true
 
@@ -87,7 +89,14 @@ app.engine('html', require('ejs').renderFile);
 app.set('layout', 'layouts/common.ejs');
 app.set('views', PROJECT_DIR + '/src/app/static/views');
 
+//middleware to parse request body 
+app.use(bodyParser.urlencoded({
+    extended: true
+  }));
 
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(express.raw());
 
 //load the naviagation routes
 app.use(require(PROJECT_DIR + '/src/app/routes/navigation.js'))

@@ -11,33 +11,33 @@
                     <h3>Create a HABDash Account</h3>
                     <div class="form-group">
                         <label for="nameInput">First Name</label> <span class="required">*</span>
-                        <input type="text" class="form-control" id="nameInput"  placeholder="Enter your first name">
+                        <input name="name" type="text" class="form-control" id="nameInput"  placeholder="Enter your first name">
                     </div>
 
                     <div class="form-group">
                         <label for="nameInput">Last Name</label> <span class="required">*</span>
-                        <input type="text" class="form-control" id="surnameInput"  placeholder="Enter your last name">
+                        <input name="surname" type="text" class="form-control" id="surnameInput"  placeholder="Enter your last name">
                     </div>
 
                     <div class="form-group">
                         <label for="emailInput">Email address</label> <span class="required">*</span>
-                        <input type="email" class="form-control" id="emailInput"  placeholder="Enter your email">
+                        <input name="email" type="email" class="form-control" id="emailInput"  placeholder="Enter your email">
                     </div>
 
 
                     <div class="form-group">
                         <label for="passwordInput">Password</label> <span class="required">*</span>
-                        <input oninput="check_if_passwords_match()" type="password" class="form-control" id="passwordInput"  placeholder="Enter your Password">
+                        <input name="password" oninput="check_if_passwords_match()" type="password" class="form-control" id="passwordInput"  placeholder="Enter your Password">
                     </div>
 
                     <div class="form-group">
                         <label for="password2Input">Confirm Password</label> <span class="required">*</span>
-                        <input oninput="check_if_passwords_match()" type="password" class="form-control" id="password2Input"  placeholder="Confirm your Password">
+                        <input name="password2" oninput="check_if_passwords_match()" type="password" class="form-control" id="password2Input"  placeholder="Confirm your Password">
                         <small style="visibility: hidden; margin-top: 4px;" id="pwd-match-text">Passwords don't match</small>
                     </div>
 
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="" id="rem_me">
+                        <input name="rem" class="form-check-input" type="checkbox" value="" id="rem_me">
                         <label class="form-check-label" for="rem_me">Remember me</label>
                     </div>
 
