@@ -53,6 +53,35 @@ module.exports.User = class {
             throw new Error("WriteDataError")
         }
     }
+
+    async create_from_email(email){
+        try{
+            result = await database_util.get_data_by_email(this.db_conn, email)
+            this.data = result[0]
+
+            this.first_name = this.data.FirstName
+            this.last_name = this.data.LastName
+            this.email = this.data.Email
+            this.pass_hash = this.data.PassHash
+            this.date_created = this.data.DateCreated
+            this.last_logon = this.data.LastLogon
+            this.UID = this.data.UID
+
+
+        } catch(e){
+            console.log(e)
+            throw new Error("CreateByEmailError")
+        }
+    }
+
+    async validate_password(challange_pass){
+        try{
+            return await bcrypt.compare(challange_pass, this.pass_hash)
+        } catch(e){
+            console.log(e)
+            throw new Error("PassValidationError")
+        }
+    }
     
 
 }

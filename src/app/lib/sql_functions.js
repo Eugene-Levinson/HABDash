@@ -101,6 +101,22 @@ async function add_auth_cookie(conn, cookie_id, UID, cookie_expiration){
     }
 }
 
+async function get_data_by_email(conn, email){
+
+    try{
+
+        //fetch the data based on the email
+        sql_code = `SELECT * FROM Users WHERE Email=${conn.escape(email)}`
+        result = await send_sql(conn, sql_code)
+        return result
+
+    } catch(e){
+        console.log(e)
+        throw new Error("GetDataByEmailError")
+    }
+    
+}
+
 
 
 module.exports.connectdb = connectdb
@@ -109,4 +125,5 @@ module.exports.user_exists = user_exists
 module.exports.save_new_user_data = save_new_user_data
 module.exports.get_last_UID = get_last_UID
 module.exports.add_auth_cookie = add_auth_cookie
+module.exports.get_data_by_email = get_data_by_email
 

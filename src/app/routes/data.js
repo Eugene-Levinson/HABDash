@@ -12,6 +12,6 @@ var data_handler = require(PROJECT_DIR + "/src/app/handlers/dataHandler.js");
 router.post("/register", asyncHandler(data_handler.registerNewUser));
 
 //login data route
-router.post("/login", data_handler.loginUser);
+router.post("/login", asyncHandler(data_handler.loginUser));
 
 module.exports = router;
