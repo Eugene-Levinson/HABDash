@@ -19,7 +19,8 @@ module.exports.User = class {
 
         this.date_created = new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '') 
 
-        //console.log(this.first_name, this.last_name, this.email, this.pass_hash, this.date_created)
+        this.gen_cookie_expiration_date()
+
     }
 
     async gen_cookie_id() {
@@ -34,32 +35,18 @@ module.exports.User = class {
         }
     }
 
+    gen_cookie_expiration_date(){
+        //calculate cookie expiration time
+        this.cookie_expiration = new Date()
+        this.cookie_expiration.setMonth(this.cookie_expiration.getMonth() + 1)
+        this.cookie_expiration = this.cookie_expiration.toISOString().replace(/T/, ' ').replace(/\..+/, '') 
+    }
+
     async write_data(){
         try{
-            //create a user record
-            var sql_code = `INSERT INTO ${secrets.DB_USER_TABLE} (FirstName, LastName, Email, PassHash, DateCreated)
-                            VALUES ('${this.first_name}', '${this.last_name}', '${this.email}', '${this.pass_hash}', '${this.date_created}')`
-
-
-            await database_util.send_sql(this.db_conn, sql_code)
-
-            //calculate cookie expiration time
-            this.cookie_expiration = new Date()
-            this.cookie_expiration.setMonth(this.cookie_expiration.getMonth() + 1)
-            this.cookie_expiration = this.cookie_expiration.toISOString().replace(/T/, ' ').replace(/\..+/, '') 
-
-            //get the UID of the current user
-            sql_code = "SELECT LAST_INSERT_ID()"
-            var last_UID = await database_util.send_sql(this.db_conn, sql_code)
-            this.UID = last_UID[0]["LAST_INSERT_ID()"]
-
-            //create a cookie record for the user -> same cookie to be set during the responce
-            sql_code = `INSERT INTO ${secrets.DB_COOKIE_TABLE} (CookieID, UID, ExpirationDate)
-                        VALUES ('${this.cookie_id}', ${this.UID}, '${this.cookie_expiration}')`
-
-            await database_util.send_sql(this.db_conn, sql_code)
-
-
+            await database_util.save_new_user_data(this.db_conn, this.first_name, this.last_name, this.email, this.pass_hash, this.date_created)
+            this.UID = await database_util.get_last_UID(this.db_conn)
+            await database_util.add_auth_cookie(this.db_conn, this.cookie_id, this.UID, this.cookie_expiration)
 
         } catch(e){
             console.log(e)

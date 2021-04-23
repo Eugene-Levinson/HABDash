@@ -57,7 +57,8 @@ module.exports.registerNewUser = async function(req, res){
             await conn.awaitCommit()
             conn.awaitEnd()
 
-            res.send(409)
+            res.status(409)
+            res.send(errors)
             return
         }
 
@@ -110,15 +111,6 @@ module.exports.registerNewUser = async function(req, res){
         
         res.send(500)
     }
-
-    
-
-
-
-
-
-    
-    
  }
 
 
