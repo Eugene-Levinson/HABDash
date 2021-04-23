@@ -11,8 +11,8 @@ const https = require('https')                                      //https modu
 const fs = require('fs')
 
 const expressLayout = require("express-ejs-layouts")
+const cookieParser = require('cookie-parser');
 
-const bodyParser = require('body-parser');
 
 
 var SSL_DISABLED = true
@@ -83,20 +83,20 @@ if (argv.s != undefined && typeof argv.s == "number"){
 const app = express()
 
 //set Express to use ejs layouts
-app.use(expressLayout);
-app.set("view engine", "html");
-app.engine('html', require('ejs').renderFile);
-app.set('layout', 'layouts/common.ejs');
-app.set('views', PROJECT_DIR + '/src/app/static/views');
+app.use(expressLayout)
+app.set("view engine", "html")
+app.engine('html', require('ejs').renderFile)
+app.set('layout', 'layouts/common.ejs')
+app.set('views', PROJECT_DIR + '/src/app/static/views')
 
-//middleware to parse request body 
-app.use(bodyParser.urlencoded({
-    extended: true
-  }));
 
+//used for parsing POST data
 app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
-app.use(express.raw());
+app.use(express.json())
+app.use(express.raw())
+
+//used for parsing cookies
+app.use(cookieParser())
 
 //load the naviagation routes
 app.use(require(PROJECT_DIR + '/src/app/routes/navigation.js'))

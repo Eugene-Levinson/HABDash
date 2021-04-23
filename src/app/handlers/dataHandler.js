@@ -20,6 +20,7 @@ module.exports.registerNewUser = async function(req, res){
         //hash the password
         var pass_hash = await bcrypt.hash(req.body.password, saltRounds)
 
+
         /// ### Verify Data ### ///
 
         //check that that passwords match
@@ -72,19 +73,20 @@ module.exports.registerNewUser = async function(req, res){
         
         //create a new record for the new user in the db
         await user.write_data()
-
-        console.log("Wrote data")
-
         
-
         //save all db changes
         await conn.awaitCommit()
-        
-        res.send(200)
 
 
+        //set the id auth cookie
+        res.cookie("auth_id", user.cookie_id, {expires: new Date(user.cookie_expiration), httpOnly: true})
 
-        
+        //set status
+        res.status(200)
+
+        //send the responce
+        res.send("This is a test of cookie setting")
+
 
 
     } catch(e) {
@@ -107,14 +109,8 @@ module.exports.registerNewUser = async function(req, res){
         console.log(e)
         
         res.send(500)
-
     }
 
-    //create a new instance of a user object
-    //var user = new data_models.User(conn)
-    //user.create_new(req.body.name, req.body.surname, req.body.email, pass_hash)
-    
-    //var user_exists = await database_util.user_exists(conn, req.body.email)
     
 
 
