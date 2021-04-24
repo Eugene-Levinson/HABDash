@@ -9,6 +9,7 @@ const bcrypt = require ('bcrypt');
 module.exports.User = class {
     constructor(db_conn){
         this.db_conn = db_conn
+        this.time_now = new Date().toISOString()
     }
 
     create_new(first_name, last_name, email, pass_hash){
@@ -26,7 +27,7 @@ module.exports.User = class {
     async gen_cookie_id() {
         try {
             var saltRounds = 10
-            var id_string = this.name + this.email + this.date_created
+            var id_string = this.name + this.email + this.time_now
             this.cookie_id = await bcrypt.hash(id_string, saltRounds)
 
         } catch(e){
@@ -67,6 +68,8 @@ module.exports.User = class {
             this.last_logon = this.data.LastLogon
             this.UID = this.data.UID
 
+            this.gen_cookie_expiration_date()
+
 
         } catch(e){
             console.log(e)
@@ -80,6 +83,15 @@ module.exports.User = class {
         } catch(e){
             console.log(e)
             throw new Error("PassValidationError")
+        }
+    }
+
+    async write_new_cookie(){
+        try{
+            await database_util.add_auth_cookie(this.db_conn, this.cookie_id, this.UID, this.cookie_expiration)
+        } catch(e){
+            console.log(e)
+            throw new Error("CookieDBError")
         }
     }
     

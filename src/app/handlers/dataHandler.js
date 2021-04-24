@@ -83,7 +83,7 @@ module.exports.registerNewUser = async function(req, res){
 
 
         //set the id auth cookie
-        res.cookie("auth_id", user.cookie_id, {expires: new Date(user.cookie_expiration), httpOnly: true})
+        res.cookie("auth_id", user.cookie_id, {expires: new Date(user.cookie_expiration), httpOnly: true, sameSite: "Lax"})
 
         //set status
         res.status(200)
@@ -122,7 +122,7 @@ module.exports.registerNewUser = async function(req, res){
 module.exports.loginUser = async function(req, res){
     //salt rounds for bcrypt
     const saltRounds = 10; 
-
+    
     var errors = []
 
 
@@ -177,6 +177,34 @@ module.exports.loginUser = async function(req, res){
             res.status(200)
             res.send(errors)
             return
+        }
+
+        //generate auth cookie id
+        await user.gen_cookie_id()
+        
+        //set a short expiration time for user cookie if they don't want to be remembered
+        if(req.body.rm == undefined){
+            //calculate cookie expiration time
+            user.cookie_expiration = new Date()
+            user.cookie_expiration.setDate(user.cookie_expiration.getDate() + 1)
+            user.cookie_expiration = user.cookie_expiration.toISOString().replace(/T/, ' ').replace(/\..+/, '') 
+        }
+
+        //write the new cookie to the db
+        await user.write_new_cookie()
+
+        //save all db changes
+        await conn.awaitCommit()
+
+        //close the connection
+        conn.awaitEnd()
+
+        //set cookie with different expiration time based on if remmember me was clicked
+        if(req.body.rm != undefined){
+            //set the id auth cookie
+            res.cookie("auth_id", user.cookie_id, {expires: new Date(user.cookie_expiration), httpOnly: true, sameSite: "Lax"})
+        } else {
+            res.cookie("auth_id", user.cookie_id, {httpOnly: true, sameSite: "Lax"})
         }
 
 
