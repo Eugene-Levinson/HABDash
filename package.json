@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/Eugene-Levinson/HABDash#readme",
   "dependencies": {
+    "@google-cloud/secret-manager": "^3.6.0",
     "bcrypt": "^5.0.1",
     "body-parser": "^1.19.0",
     "cookie-parser": "^1.4.5",
