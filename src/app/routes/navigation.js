@@ -1,6 +1,8 @@
 var express = require("express");
 var router = express.Router();
 
+const asyncHandler = require('express-async-handler')
+
 //load project dir path
 var PROJECT_DIR = process.env.PROJECT_DIR;  
 
@@ -15,7 +17,7 @@ router.get("/home", navigation_handler.homePage);
 //register route
 router.get("/register", navigation_handler.registerPage);
 //login route
-router.get("/login", navigation_handler.loginPage);
+router.get("/login", asyncHandler(navigation_handler.loginPage));
 
 //export everything out
 module.exports = router;
