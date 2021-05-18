@@ -69,13 +69,19 @@ function verify_input(){
     
 
     if (inputs_are_valid){
-        document.getElementById("register_form").submit(); 
+        //document.getElementById("register_form").submit();
+        var data = {}
+        
+        data.name = name_field.value
+        data.surname = surname_field.value
+        data.email = email_field.value
+        data.password = password_field.value
+        data.password2 = password2_field.value
+
+        ajaxPost(data)
     }
-    
-
-    
-
 }
+
 
 function check_if_passwords_match(){
     var password_field = document.getElementById('passwordInput')
@@ -101,8 +107,60 @@ function check_if_passwords_match(){
         password_label.style.color = "red"
         password_label.innerHTML = "Passwords don't match!"
     }
+}
 
 
+function ajaxPost(data){
+    try{
 
+        //use ajax to send a post request to register the data
+        $.ajax({
+        type: "POST",
+        url: "/register",
+        data: data,
+        dataType: "json",
+        success: function(result){
+            var alert_box = document.getElementById('alerts')
+
+            //if there are errors output them if no errors then redirect to dashboard
+            if(result.errors.length > 0){
+                //reset any alerts
+                alert_box.innerHTML = ""
+
+                //create new alerts for every error
+                for(var error in result.errors){
+                    alert_box.innerHTML += 
+                    `<div class="alert alert-danger" role="alert" id="alert">
+                    ${result.errors[error]}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    </div>`;
+                }
+            } else {
+                window.location.href = '/dashboard';
+            }
+        } 
+
+        });
+
+    } catch(e){
+        console.log(e)
+        var alert_box = document.getElementById('alerts')
+        var error = "Cannot submitt data to the server. Please try again later or contact support"
+
+        //dsplay error msg
+        alert_box.innerHTML = ""
+        alert_box.innerHTML += 
+        `<div class="alert alert-danger" role="alert" id="alert">
+        ${error}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        </div>`;
+        
+    }
 
 }
+
+

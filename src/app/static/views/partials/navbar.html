@@ -22,7 +22,7 @@
         </li>
       </ul>
       
-      <% if (data.authenticated) { %>
+      <% if (!data.authenticated) { %>
         <div>
             <a href="/login" class="btn btn-primary" role="button">Sign In</a>
             <a href="/register" class="btn btn-primary" role="button">Register</a>

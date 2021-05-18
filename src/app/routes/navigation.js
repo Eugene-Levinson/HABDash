@@ -11,11 +11,11 @@ var navigation_handler = require(PROJECT_DIR + "/src/app/handlers/navigationHand
 
 
 //root route
-router.get("/", navigation_handler.homePage);
+router.get("/", asyncHandler(navigation_handler.homePage));
 //home route
-router.get("/home", navigation_handler.homePage);
+router.get("/home", asyncHandler(navigation_handler.homePage));
 //register route
-router.get("/register", navigation_handler.registerPage);
+router.get("/register", asyncHandler(navigation_handler.registerPage));
 //login route
 router.get("/login", asyncHandler(navigation_handler.loginPage));
 //dashboard route

@@ -49,16 +49,22 @@ module.exports.registerNewUser = async function(req, res){
         var user_exists = await database_util.user_exists(conn, req.body.email)
 
         if (user_exists) {
-            errors.push("User allready exists")
+            errors.push("User with this email allready exists")
         }
 
         //respond with error messages if there are errors
         if (errors.length != 0) {
+            //finish db transaction and close the connection
             await conn.awaitCommit()
             conn.awaitEnd()
 
-            res.status(409)
-            res.send(errors)
+            //prep the responce data for ajax
+            var responce_data = {}
+            responce_data.errors = errors
+            responce_data.msg = ""
+
+            //send the errors back
+            res.send(responce_data)
             return
         }
 
@@ -82,14 +88,17 @@ module.exports.registerNewUser = async function(req, res){
         conn.awaitEnd()
 
 
+        //prep the responce data for ajax
+        var responce_data = {}
+        responce_data.errors = errors
+        responce_data.msg = "Successully created a new account!"
+
         //set the id auth cookie
         res.cookie("auth_id", user.cookie_id, {expires: new Date(user.cookie_expiration), httpOnly: true, sameSite: "Lax"})
 
-        //set status
-        res.status(200)
-
-        //send the responce
-        res.send("You have successfully registered a new HABDash account! You can now login")
+        //send back to dashboard
+        res.send(responce_data)
+        return
 
 
 
@@ -111,8 +120,11 @@ module.exports.registerNewUser = async function(req, res){
         }
 
         console.log(e)
+
+        var responce_data = {}
+        responce_data.errors = ["Internal server error has occured. Please try again later and if the problem has not been resolved, please contact support"]
         
-        res.send(500)
+        res.send(responce_data)
     }
  }
 
@@ -157,8 +169,14 @@ module.exports.loginUser = async function(req, res){
             await conn.awaitCommit()
             conn.awaitEnd()
 
-            res.status(409)
-            res.send(errors)
+
+            //prep the responce data for ajax
+            var responce_data = {}
+            responce_data.errors = errors
+            responce_data.msg = ""
+
+            //send the errors back
+            res.send(responce_data)
             return
         }
 
@@ -174,8 +192,14 @@ module.exports.loginUser = async function(req, res){
         //respond with error if not a valid user
         if(!valid_user){
             errors.push("Either you email or password are incorrect. Make sure you have created a HABDash account and try again")
-            res.status(200)
-            res.send(errors)
+
+            //prep the responce data for ajax
+            var responce_data = {}
+            responce_data.errors = errors
+            responce_data.msg = ""
+
+            //send the errors back
+            res.send(responce_data)
             return
         }
 
@@ -207,9 +231,13 @@ module.exports.loginUser = async function(req, res){
             res.cookie("auth_id", user.cookie_id, {httpOnly: true, sameSite: "Lax"})
         }
 
+        //prep the responce data for ajax
+        var responce_data = {}
+        responce_data.errors = errors
+        responce_data.msg = "Successully created a new account!"
 
-        res.status(200)
-        res.send(`Hello, ${user.first_name}! Welcome to HABDash, your account creation date is: ${user.date_created}`)
+        //redirect back to dashboard
+        res.send(responce_data)
 
 
 
@@ -227,7 +255,11 @@ module.exports.loginUser = async function(req, res){
         }
         
         console.log(e)
-        res.send(500)
+        
+        var responce_data = {}
+        responce_data.errors = ["Internal server error has occured. Please try again later and if the problem has not been resolved, please contact support"]
+        
+        res.send(responce_data)
     }
     
  }
