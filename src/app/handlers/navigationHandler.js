@@ -48,7 +48,7 @@ module.exports.loginPage = async function(req, res){
         } 
 
         res.status(200)
-        res.render(PROJECT_DIR + "/src/app/static/views/templates/login.html", {data: {authenticated: false}})
+        res.render(PROJECT_DIR + "/src/app/static/views/templates/dashboard.html", {data: {authenticated: false}})
 
     } catch(e){
         res.send(500)
