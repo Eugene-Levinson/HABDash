@@ -77,6 +77,40 @@ module.exports.User = class {
         }
     }
 
+    async create_from_cookie(cookie_id){
+        try{
+            user_data = await database_util.get_data_by_cookieid(this.db_conn, cookie_id)
+            this.first_name = user_data.FirstName
+            this.last_name = user_data.LastName
+            this.email = user_data.Email
+            this.pass_hash = user_data.PassHash
+            this.date_created = user_data.DateCreated
+            this.last_logon = user_data.last_logon
+            this.UID = user_data.UID
+            this.cookie_expiration = user_data.ExpirationDate.toISOString().replace(/T/, ' ').replace(/\..+/, '') 
+
+        } catch(e){
+            console.log(e)
+            throw new Error("CreateFromCookieError")
+        }
+    }
+
+    async valid_auth_cookie(cookie_id){
+        try{
+            var cookie_data = await database_util.check_auth_cookie(this.db_conn, cookie_id)
+
+            if (cookie_data == undefined){
+                return false
+            } else {
+                return true
+            }
+
+        } catch(e){
+            console.log(e)
+            throw new Error("CookieValidationError")
+        }
+    }
+
     async validate_password(challange_pass){
         try{
             return await bcrypt.compare(challange_pass, this.pass_hash)

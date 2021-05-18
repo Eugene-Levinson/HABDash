@@ -106,7 +106,7 @@ module.exports.registerNewUser = async function(req, res){
             console.log("Error occured while generating new cookie id")
         }
 
-        if (e.message == "UserExistsError"){
+        if (e.message == "WriteDataError"){
             console.log("Error occured while creating a record for the new user in the db")
         }
 

@@ -117,6 +117,39 @@ async function get_data_by_email(conn, email){
     
 }
 
+async function get_data_by_cookieid(conn, cookie_id){
+    try{
+        sql_code = `SELECT * FROM Cookies WHERE CookieID=${conn.escape(cookie_id)};`
+        cookie_data = await send_sql(conn, sql_code)
+        cookie_data = cookie_data[0]
+        uid = cookie_data.UID
+
+        sql_code = `SELECT * FROM Users WHERE UID=${conn.escape(uid)};`
+        user_data = await send_sql(conn, sql_code)  
+        user_data = user_data[0]
+
+        user_data = Object.assign({}, cookie_data, user_data)
+
+        return user_data
+
+    } catch(e){
+        console.log(e)
+        throw new Error("GetDataByCookieIDError")
+    }
+}
+
+async function check_auth_cookie(conn, cookie_id){
+    try{
+        sql_code = `SELECT * FROM Cookies WHERE CookieID=${conn.escape(cookie_id)};`
+        result = await send_sql(conn, sql_code)
+        return result[0]
+
+    } catch(e){
+        console.log(e)
+        throw new Error("CheckAuthCookie")
+    }
+}
+
 
 
 module.exports.connectdb = connectdb
@@ -126,4 +159,6 @@ module.exports.save_new_user_data = save_new_user_data
 module.exports.get_last_UID = get_last_UID
 module.exports.add_auth_cookie = add_auth_cookie
 module.exports.get_data_by_email = get_data_by_email
+module.exports.get_data_by_cookieid = get_data_by_cookieid
+module.exports.check_auth_cookie = check_auth_cookie
 

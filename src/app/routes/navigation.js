@@ -18,6 +18,8 @@ router.get("/home", navigation_handler.homePage);
 router.get("/register", navigation_handler.registerPage);
 //login route
 router.get("/login", asyncHandler(navigation_handler.loginPage));
+//dashboard route
+router.get("/dashboard", asyncHandler(navigation_handler.dashboard_page));
 
 //export everything out
 module.exports = router;
