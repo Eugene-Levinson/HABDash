@@ -11,17 +11,17 @@ module.exports.hello_world = function(req, res){
 
 //Display home page
 module.exports.homePage = function(req, res){
-   res.render(PROJECT_DIR + "/src/app/static/views/templates/index.html", {show_navlogin: true})
+   res.render(PROJECT_DIR + "/src/app/static/views/templates/index.html", {data: {authenticated: true}})
 }
 
 //Display register page
 module.exports.registerPage = function(req, res){
-    res.render(PROJECT_DIR + "/src/app/static/views/templates/register.html", {show_navlogin: false})
+    res.render(PROJECT_DIR + "/src/app/static/views/templates/register.html", {data: {authenticated: false}})
 }
 
  //Display login page
 module.exports.loginPage = async function(req, res){
-    res.render(PROJECT_DIR + "/src/app/static/views/templates/login.html", {show_navlogin: false})
+    res.render(PROJECT_DIR + "/src/app/static/views/templates/login.html", {data: {authenticated: false}})
 }
 
  //Display dashboard
@@ -48,7 +48,7 @@ module.exports.loginPage = async function(req, res){
         } 
 
         res.status(200)
-        res.send("This is a valid user")
+        res.render(PROJECT_DIR + "/src/app/static/views/templates/login.html", {data: {authenticated: false}})
 
     } catch(e){
         res.send(500)

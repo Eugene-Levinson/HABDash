@@ -12,10 +12,10 @@
 <body>  
         <div id="wrap">
 
-            <%- include(process.env.PROJECT_DIR + '/src/app/static/views/partials/navbar.html', {show_navlogin: show_navlogin}); %>
+            <%- include(process.env.PROJECT_DIR + '/src/app/static/views/partials/navbar.html', {data: data}); %>
             
             <div id="main" class="container clear-top">
-                 <%- include(process.env.PROJECT_DIR + '/src/app/static/views/partials/login_body.html', {show_navlogin: show_navlogin}); %>
+                 <%- include(process.env.PROJECT_DIR + '/src/app/static/views/partials/login_body.html', {data: data}); %>
             </div>
 
         </div>

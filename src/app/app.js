@@ -110,10 +110,10 @@ app.use(require(PROJECT_DIR + '/src/app/routes/data.js'))
 //handle 404
 app.use(function(req, res) {
     var error_msg = "We are sorry but this page cannot be found. ☹️"
+    var page_data = {authenticated: false, error_body: error_msg}
     res.status(400);
-    res.render(PROJECT_DIR + "/src/app/static/views/templates/error.html", {show_navlogin: true, error_body: error_msg });
+    res.render(PROJECT_DIR + "/src/app/static/views/templates/error.html", {data: page_data});
 });
-
 
 if (!SSL_DISABLED){
     const https_server = https.createServer(ssl_creds, app)

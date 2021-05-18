@@ -12,11 +12,11 @@
 <body>  
         <div id="wrap">
 
-            <%- include(process.env.PROJECT_DIR + '/src/app/static/views/partials/navbar.html', {show_navlogin: show_navlogin}); %>
+            <%- include(process.env.PROJECT_DIR + '/src/app/static/views/partials/navbar.html', {data: data}); %>
             
             <div id="main" class="container clear-top">
                 <div style="padding: 10px; margin: 10px;">
-                    <h2 ><%=error_body%></h2>
+                    <h2 ><%=data.error_body%></h2>
                     <h2>Please check your URL or contact support.</h2>
                 </div>
                 
