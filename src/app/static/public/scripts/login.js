@@ -31,7 +31,7 @@ function verify_input(){
         var data = {}
         data.email = email_field.value
         data.password = password_field.value
-        data.rem_me = rem_me.value
+        data.rem_me = rem_me.checked
 
         ajaxPost(data)
 

@@ -207,7 +207,7 @@ module.exports.loginUser = async function(req, res){
         await user.gen_cookie_id()
         
         //set a short expiration time for user cookie if they don't want to be remembered
-        if(req.body.rm == undefined){
+        if(req.body.rem_me == undefined){
             //calculate cookie expiration time
             user.cookie_expiration = new Date()
             user.cookie_expiration.setDate(user.cookie_expiration.getDate() + 1)
@@ -224,7 +224,7 @@ module.exports.loginUser = async function(req, res){
         conn.awaitEnd()
 
         //set cookie with different expiration time based on if remmember me was clicked
-        if(req.body.rm != undefined){
+        if(req.body.rem_me == "true"){
             //set the id auth cookie
             res.cookie("auth_id", user.cookie_id, {expires: new Date(user.cookie_expiration), httpOnly: true, sameSite: "Lax"})
         } else {
