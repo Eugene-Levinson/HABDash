@@ -89,3 +89,12 @@ function ajaxPost(data){
     }
 
 }
+
+function bind_keys(){
+    $(document).keypress(function(e){
+        if (e.which == 13){
+            $("#submit_button").click();
+        }
+    });
+
+}
