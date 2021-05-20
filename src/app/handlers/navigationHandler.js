@@ -26,14 +26,30 @@ module.exports.homePage = async function(req, res){
         //verify the user
         var valid_cookie = await user.valid_auth_cookie(auth_cookie_id)
 
-        var authenticated = false
+        
 
         if (valid_cookie){
             authenticated = true
-        } 
 
-        res.status(200)
-        res.render(PROJECT_DIR + "/src/app/static/views/templates/index.html", {data: {authenticated: authenticated}})
+            await user.create_from_cookie(auth_cookie_id)
+
+            var responce_data = {}
+            responce_data.authenticated = authenticated
+            responce_data.user_data = user.get_all_user_data()
+
+
+            res.status(200)
+            res.render(PROJECT_DIR + "/src/app/static/views/templates/index.html", {data: responce_data})
+
+        } else {
+            var authenticated = false
+            var responce_data = {}
+            responce_data.authenticated = authenticated
+
+            res.status(200)
+            res.render(PROJECT_DIR + "/src/app/static/views/templates/index.html", {data: responce_data})
+        }
+        
 
     } catch(e){
         console.log(e)
@@ -58,6 +74,7 @@ module.exports.registerPage = async function(req, res){
 
         //redirect to dashboard if already authenticated
         if (valid_cookie){
+            
             //redirect to dashboard
             res.redirect('/dashboard')
             return
@@ -125,8 +142,19 @@ module.exports.loginPage = async function(req, res){
             return
         }
 
+        authenticated = true
+
+        await user.create_from_cookie(auth_cookie_id)
+
+        //data passed to the page for rendering
+        var responce_data = {}
+        responce_data.authenticated = authenticated
+        responce_data.user_data = user.get_all_user_data()
+
+
         res.status(200)
-        res.render(PROJECT_DIR + "/src/app/static/views/templates/dashboard.html", {data: {authenticated: true}})
+        res.render(PROJECT_DIR + "/src/app/static/views/templates/dashboard.html", {data: responce_data})
+
 
     } catch(e){
         console.log(e)

@@ -27,6 +27,22 @@
             <a href="/login" class="btn btn-primary" role="button">Sign In</a>
             <a href="/register" class="btn btn-primary" role="button">Register</a>
         </div>
+      <% } else {%>
+        <div class="btn-group">
+          <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" data-display="static" aria-haspopup="true" aria-expanded="false">
+            Account
+          </button>
+          <div class="dropdown-menu dropdown-menu-lg-right">
+            <h6 class="dropdown-header" style="color: #5e5e5c">Signed in as 
+              <br> 
+              <b><%= data.user_data.first_name%> <%= data.user_data.last_name%></b>
+            </h6>
+            <div class="dropdown-divider"></div>
+            <button class="dropdown-item" type="button" style="color: #3e3f3a">Your Profile</button>
+            <div class="dropdown-divider"></div>
+            <button class="dropdown-item" type="button" style="color: red;">Sign Out</button>
+          </div>
+        </div>
       <% } %>
     </div>
   </nav>

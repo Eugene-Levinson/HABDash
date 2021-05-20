@@ -128,6 +128,18 @@ module.exports.User = class {
             throw new Error("CookieDBError")
         }
     }
+
+    get_all_user_data(){
+        var user_data = {}
+
+        user_data.first_name = this.first_name 
+        user_data.last_name = this.last_name 
+        user_data.email = this.email 
+        user_data.date_created = this.date_created 
+        user_data.last_logon = this.last_logon 
+
+        return user_data
+    }
     
 
 }
