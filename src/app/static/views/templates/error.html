@@ -15,6 +15,7 @@
             <%- include(process.env.PROJECT_DIR + '/src/app/static/views/partials/navbar.html', {data: data}); %>
             
             <div id="main" class="container clear-top">
+                <div style="margin-top: 8px;" id="alerts"></div>
                 <div style="padding: 10px; margin: 10px;">
                     <h2 ><%=data.error_body%></h2>
                     <h2>Please check your URL or contact support.</h2>
@@ -26,7 +27,8 @@
         </div>
               
 
-        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+        <script src="scripts/common.js"></script>
+        <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-Piv4xVNRyMGpqkS2by6br4gNJ7DXjqk09RmUpJ8jgGtD7zP9yug3goQfGII0yAns" crossorigin="anonymous"></script>
         
         <%- include(process.env.PROJECT_DIR + '/src/app/static/views/partials/footer.html'); %>

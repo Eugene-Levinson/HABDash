@@ -14,4 +14,7 @@ router.post("/register", asyncHandler(data_handler.registerNewUser));
 //login data route
 router.post("/login", asyncHandler(data_handler.loginUser));
 
+//logout data route
+router.post("/logout", asyncHandler(data_handler.logoutUser));
+
 module.exports = router;

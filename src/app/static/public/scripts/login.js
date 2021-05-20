@@ -40,6 +40,7 @@ function verify_input(){
 
 
 function ajaxPost(data){
+    
     try{
 
         //use ajax to send a post request to register the data
@@ -50,6 +51,7 @@ function ajaxPost(data){
         dataType: "json",
         success: function(result){
             var alert_box = document.getElementById('alerts')
+            console.log("TEST")
             
             //if there are errors output them if no errors then redirect to dashboard
             if(result.errors.length > 0){

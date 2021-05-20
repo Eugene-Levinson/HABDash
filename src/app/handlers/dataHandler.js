@@ -263,3 +263,38 @@ module.exports.loginUser = async function(req, res){
     }
     
  }
+
+
+ module.exports.logoutUser = async function(req, res){
+     try{
+         //create a new connection to the database
+        var conn = await database_util.connectdb(secrets.DB_HOST, secrets.DB_USER, secrets.DB_PASSWORD, secrets.DB_NAME)
+
+        //start the db transaction
+        await conn.awaitBeginTransaction()
+
+        //get the auth_cookie_id
+        var auth_cookie_id = req.cookies.auth_id
+
+        //remove cookie from the DB
+        await database_util.remove_cookie_record(conn, auth_cookie_id)
+
+        //save all db changes
+        await conn.awaitCommit()
+
+        //close the connection
+        conn.awaitEnd()
+        
+
+        //remove coookie from the request
+        res.clearCookie("auth_id", {httpOnly: true, sameSite: "Lax"});
+
+        res.send({"logged_out": true})
+
+
+     }catch(e){
+         console.log(e)
+         res.send({"logged_out": false})
+     }
+
+ }
