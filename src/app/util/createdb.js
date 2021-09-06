@@ -74,6 +74,39 @@ async function generate_tables(con){
         await sendsql(con, sql_code)
         console.log("Created 'Cookies' table")
 
+        sql_code = `CREATE TABLE flights (
+            flight_name varchar(255),
+            UID int NOT NULL,
+            msg_descriptor varchar(255),
+            last_edited DATETIME,
+            last_data_entry DATETIME,
+            FOREIGN KEY (UID) REFERENCES Users(UID)
+        );`
+
+        await sendsql(con, sql_code)
+        console.log("Created 'flights' table")
+
+        sql_code = `CREATE TABLE flight_data (
+            flight_name varchar(255),
+            date_added DATETIME,
+            data varchar(255)
+        );`
+
+        await sendsql(con, sql_code)
+        console.log("Created 'flight_data' table")
+
+        sql_code = `CREATE TABLE data_fields (
+            flight_name varchar(255),
+            field_label varchar(255),
+            label_type varchar(255),
+            is_callsigng BIT
+        );`
+
+        await sendsql(con, sql_code)
+        console.log("Created 'data_field' table")
+
+
+
     } catch(e){console.log(e)}
 }
 
