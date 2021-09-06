@@ -99,7 +99,9 @@ async function generate_tables(con){
             flight_name varchar(255),
             field_label varchar(255),
             label_type varchar(255),
-            is_callsigng BIT
+            is_callsigng BIT,
+            chart_data BIT,
+            display_map BIT
         );`
 
         await sendsql(con, sql_code)
