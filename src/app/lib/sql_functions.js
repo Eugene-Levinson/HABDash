@@ -161,6 +161,25 @@ async function remove_cookie_record(conn, cookie_id){
     }
 }
 
+async function get_user_flights(conn, user_uid){
+    try{
+        sql_code = `SELECT * FROM flights WHERE UID=${conn.escape(user_uid)}`
+        result = await send_sql(conn, sql_code)
+
+        var flights = []
+
+        for (entry in result){
+            flights.push(result[entry].flight_name)
+        }
+
+        return flights
+     
+    } catch(e){
+        console.log(e)
+        throw new Error("GetUserFlightsError")
+    }
+}
+
 
 
 module.exports.connectdb = connectdb
@@ -173,4 +192,5 @@ module.exports.get_data_by_email = get_data_by_email
 module.exports.get_data_by_cookieid = get_data_by_cookieid
 module.exports.check_auth_cookie = check_auth_cookie
 module.exports.remove_cookie_record = remove_cookie_record
+module.exports.get_user_flights = get_user_flights
 

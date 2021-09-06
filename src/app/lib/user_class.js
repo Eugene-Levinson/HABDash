@@ -141,5 +141,15 @@ module.exports.User = class {
         return user_data
     }
     
+    async get_flights(){
+        try{
+            return await database_util.get_user_flights(this.db_conn, this.UID)
+
+        } catch(e){
+            console.log(e)
+            throw new Error("GetUserFlightsError")
+        }
+    }
+    
 
 }
