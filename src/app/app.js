@@ -107,6 +107,9 @@ app.use(require(PROJECT_DIR + '/src/app/routes/util.js'))
 //load data processing routes
 app.use(require(PROJECT_DIR + '/src/app/routes/data.js'))
 
+//api routes
+app.use(require(PROJECT_DIR + '/src/app/routes/api.js'))
+
 //handle 404
 app.use(function(req, res) {
     var error_msg = "We are sorry but this page cannot be found. ☹️"
