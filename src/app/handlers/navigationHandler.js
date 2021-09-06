@@ -162,3 +162,51 @@ module.exports.loginPage = async function(req, res){
     }
     
 }
+
+module.exports.flight = async function(req, res){
+    try{
+        //create a new connection to the database
+        var conn = await database_util.connectdb(secrets.DB_HOST, secrets.DB_USER, secrets.DB_PASSWORD, secrets.DB_NAME)
+        
+        //create a new instance of a user object
+        var user = new data_models.User(conn)
+
+        //get the auth_cookie_id
+        var auth_cookie_id = req.cookies.auth_id
+        
+        //verify the user
+        var valid_cookie = await user.valid_auth_cookie(auth_cookie_id)
+
+        var responce_data = {}
+
+        if (valid_cookie){
+            authenticated = true
+
+            await user.create_from_cookie(auth_cookie_id)
+
+            responce_data.authenticated = authenticated
+            responce_data.user_data = user.get_all_user_data()
+
+        } else {
+            var authenticated = false
+            responce_data.authenticated = authenticated
+            responce_data.user_data = null
+        }
+
+        responce_data.flightId = req.params.flightId
+
+        //get the list of flights the user owns
+        var flights = await user.get_flights()
+
+        //check if the flight exists and pass that info to the page
+        responce_data.flight_exists = flights.includes(req.params.flightId)
+
+        res.status(200)
+        res.render(PROJECT_DIR + "/src/app/static/views/templates/flight.html", {data: responce_data})
+        
+
+    } catch(e){
+        console.log(e)
+        res.send(500)
+    }
+}

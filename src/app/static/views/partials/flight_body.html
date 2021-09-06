@@ -1,0 +1,38 @@
+<div class="container-fluid" style="min-height: 100%;">
+    <% if (data.flight_exists) { %>
+        <div style="min-height: 10px;" class="row">
+        </div>
+
+        <div class="row">
+            <div class="col-md-3 mt-md-0 mt-3">
+            </div>
+            <div class="col-md-6 mt-md-0 mt-3">
+                <div style="min-height: 5px;" class="row">
+                    <div class="col-md-4 mt-md-0 mt-3">
+                        <h2><b>Latest Telemetry</b></h2>
+                    </div>
+                    <div class="col-md-1 mt-md-0 mt-3">
+                    </div>
+                    <div class="col-md-7 mt-md-0 mt-3">
+                        <h2>Payload Status: Active</h2>
+                    </div>
+                    
+                </div>
+            </div>
+            <div class="col-md-3 mt-md-0 mt-3">
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-3 mt-md-0 mt-3">
+            </div>
+            <div class="col-md-6 mt-md-0 mt-3">
+            </div>
+            <div class="col-md-3 mt-md-0 mt-3">
+            </div>
+
+        </div>
+    <% } else {%>
+        Not such flight exists. Be the one to create it:
+    <% } %>
+</div>
