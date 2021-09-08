@@ -163,7 +163,7 @@ async function remove_cookie_record(conn, cookie_id){
 
 async function get_user_flights(conn, user_uid){
     try{
-        sql_code = `SELECT * FROM flights WHERE UID=${conn.escape(user_uid)}`
+        sql_code = `SELECT * FROM flights WHERE user_uid=${conn.escape(user_uid)}`
         result = await send_sql(conn, sql_code)
 
         var flights = []
@@ -180,6 +180,42 @@ async function get_user_flights(conn, user_uid){
     }
 }
 
+async function get_flight_info(conn, flight_name){
+    try{
+        var sql_code = `SELECT * FROM flights WHERE flight_name=${conn.escape(flight_name)}`
+        var flight_setup_data = await send_sql(conn, sql_code)
+
+        sql_code = `SELECT * FROM data_fields WHERE flight_name=${conn.escape(flight_name)}`
+        var flight_field_data = await send_sql(conn, sql_code)
+
+        sql_code = `SELECT * FROM raw_flight_data WHERE flight_name=${conn.escape(flight_name)}`
+        var raw_data = await send_sql(conn, sql_code)
+
+        if (flight_setup_data == "" || flight_setup_data == undefined || flight_setup_data == {}){
+            return null
+        }
+
+        for (i in flight_field_data){
+            flight_field_data[i].chart_data = flight_field_data[i].chart_data.readUIntLE()
+
+            //console.log(flight_field_data[i]["flight_name"])
+        }
+
+        //combine the json together
+        var combined_data = flight_setup_data[0]
+        combined_data.fields = flight_field_data
+        combined_data.raw_flight_data = raw_data
+        
+        //return flight_data
+        return combined_data
+    
+    } catch(e){
+        console.log(e)
+        throw new Error("GetUserFlightsError")
+    }
+}
+
+
 
 
 module.exports.connectdb = connectdb
@@ -193,4 +229,5 @@ module.exports.get_data_by_cookieid = get_data_by_cookieid
 module.exports.check_auth_cookie = check_auth_cookie
 module.exports.remove_cookie_record = remove_cookie_record
 module.exports.get_user_flights = get_user_flights
+module.exports.get_flight_info = get_flight_info
 

@@ -76,36 +76,49 @@ async function generate_tables(con){
 
         sql_code = `CREATE TABLE flights (
             flight_name varchar(255),
-            UID int NOT NULL,
+            user_uid int NOT NULL,
             msg_descriptor varchar(255),
             last_edited DATETIME,
             last_data_entry DATETIME,
-            FOREIGN KEY (UID) REFERENCES Users(UID)
+            lat_field_name varchar(255),
+            lon_field_name varchar(255),
+            time_stamp_field varchar(255),
+            FOREIGN KEY (user_uid) REFERENCES Users(UID)
         );`
 
         await sendsql(con, sql_code)
         console.log("Created 'flights' table")
 
-        sql_code = `CREATE TABLE flight_data (
+        sql_code = `CREATE TABLE raw_flight_data (
             flight_name varchar(255),
             date_added DATETIME,
             data varchar(255)
         );`
 
         await sendsql(con, sql_code)
-        console.log("Created 'flight_data' table")
+        console.log("Created 'raw_flight_data' table")
 
         sql_code = `CREATE TABLE data_fields (
             flight_name varchar(255),
-            field_label varchar(255),
-            label_type varchar(255),
-            is_callsigng BIT,
-            chart_data BIT,
-            display_map BIT
+            field_name varchar(255),
+            field_type varchar(255),
+            chart_data BIT
         );`
 
         await sendsql(con, sql_code)
         console.log("Created 'data_field' table")
+
+        sql_code = `CREATE TABLE parse_log (
+            log_uid int NOT NULL AUTO_INCREMENT,
+            flight_name varchar(255),
+            log_type varchar(255),
+            time_stamp DATETIME,
+            msg varchar(255),
+            PRIMARY KEY (log_uid)
+        );`
+
+        await sendsql(con, sql_code)
+        console.log("Created 'parse_log' table")
 
 
 
