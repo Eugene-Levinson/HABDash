@@ -188,7 +188,7 @@ async function get_flight_info(conn, flight_name){
         sql_code = `SELECT * FROM data_fields WHERE flight_name=${conn.escape(flight_name)}`
         var flight_field_data = await send_sql(conn, sql_code)
 
-        sql_code = `SELECT * FROM raw_flight_data WHERE flight_name=${conn.escape(flight_name)}`
+        sql_code = `SELECT * FROM raw_flight_data WHERE flight_name=${conn.escape(flight_name)} ORDER BY date_added DESC`
         var raw_data = await send_sql(conn, sql_code)
 
         if (flight_setup_data == "" || flight_setup_data == undefined || flight_setup_data == {}){
@@ -215,6 +215,20 @@ async function get_flight_info(conn, flight_name){
     }
 }
 
+async function write_raw_telem(conn, flight_name, telem_string){
+    try{
+        var date_now = new Date().toISOString().slice(0, 19).replace('T', ' ');
+
+        var sql_code = `INSERT INTO raw_flight_data (flight_name, date_added, data) VALUES (${conn.escape(flight_name)}, "${date_now}", ${conn.escape(telem_string)})`
+
+        await send_sql(conn, sql_code)
+
+    } catch(e){
+        console.log(e)
+        throw new Error("RecordTelemDataError")
+    }
+}
+
 
 
 
@@ -230,4 +244,4 @@ module.exports.check_auth_cookie = check_auth_cookie
 module.exports.remove_cookie_record = remove_cookie_record
 module.exports.get_user_flights = get_user_flights
 module.exports.get_flight_info = get_flight_info
-
+module.exports.write_raw_telem = write_raw_telem
