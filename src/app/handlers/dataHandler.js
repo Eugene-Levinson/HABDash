@@ -98,8 +98,6 @@ module.exports.registerNewUser = async function(req, res){
 
         //send back to dashboard
         res.send(responce_data)
-        return
-
 
 
     } catch(e) {
@@ -125,6 +123,10 @@ module.exports.registerNewUser = async function(req, res){
         responce_data.errors = ["Internal server error has occured. Please try again later and if the problem has not been resolved, please contact support"]
         
         res.send(responce_data)
+
+    } finally {
+        //close the connection
+        conn.awaitEnd()
     }
  }
 
@@ -220,9 +222,6 @@ module.exports.loginUser = async function(req, res){
         //save all db changes
         await conn.awaitCommit()
 
-        //close the connection
-        conn.awaitEnd()
-
         //set cookie with different expiration time based on if remmember me was clicked
         if(req.body.rem_me == "true"){
             //set the id auth cookie
@@ -260,6 +259,9 @@ module.exports.loginUser = async function(req, res){
         responce_data.errors = ["Internal server error has occured. Please try again later and if the problem has not been resolved, please contact support"]
         
         res.send(responce_data)
+    } finally {
+        //close the connection
+        conn.awaitEnd()
     }
     
  }
@@ -281,11 +283,7 @@ module.exports.loginUser = async function(req, res){
 
         //save all db changes
         await conn.awaitCommit()
-
-        //close the connection
-        conn.awaitEnd()
         
-
         //remove coookie from the request
         res.clearCookie("auth_id", {httpOnly: true, sameSite: "Lax"});
 
@@ -295,6 +293,10 @@ module.exports.loginUser = async function(req, res){
      }catch(e){
          console.log(e)
          res.send({"logged_out": false})
+         
+     } finally {
+        //close the connection
+        conn.awaitEnd()
      }
 
  }

@@ -13,6 +13,8 @@ module.exports.get_flight_data = async function(req, res){
         var flight_data = await flight.get_flight_info(flight.flight_name)
 
         if (flight_data == null){
+            conn.awaitEnd()
+            
             res.status(404)
             res.send("No such flight found")
             return
@@ -26,5 +28,9 @@ module.exports.get_flight_data = async function(req, res){
     } catch(e){
         console.log(e)
         res.send(500)
+
+    } finally {
+        //close the connection
+        conn.awaitEnd()
     }
 }

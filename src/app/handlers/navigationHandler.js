@@ -54,6 +54,10 @@ module.exports.homePage = async function(req, res){
     } catch(e){
         console.log(e)
         res.send(500)
+
+    } finally{
+        //close connection
+        conn.awaitEnd()
     }
 }
 
@@ -74,6 +78,8 @@ module.exports.registerPage = async function(req, res){
 
         //redirect to dashboard if already authenticated
         if (valid_cookie){
+            //close connection
+            conn.awaitEnd()
             
             //redirect to dashboard
             res.redirect('/dashboard')
@@ -86,7 +92,11 @@ module.exports.registerPage = async function(req, res){
     } catch(e){
         console.log(e)
         res.send(500)
-    }
+    
+    } finally {
+        //close connection
+        conn.awaitEnd()
+    } 
 }
 
  //Display login page
@@ -106,6 +116,9 @@ module.exports.loginPage = async function(req, res){
 
         //redirect to dashboard if already authenticated
         if (valid_cookie){
+            //close connection
+            conn.awaitEnd()
+
             //redirect to dashboard
             res.redirect('/dashboard')
             return
@@ -117,6 +130,10 @@ module.exports.loginPage = async function(req, res){
     } catch(e){
         console.log(e)
         res.send(500)
+    
+    } finally {
+        //close connection
+        conn.awaitEnd()
     }
 }
 
@@ -137,6 +154,9 @@ module.exports.loginPage = async function(req, res){
 
         //redirect to login if invalid auth token
         if (!valid_cookie){
+            //close connection
+            conn.awaitEnd()
+
             //redirect back to login
             res.redirect('/login')
             return
@@ -159,6 +179,10 @@ module.exports.loginPage = async function(req, res){
     } catch(e){
         console.log(e)
         res.send(500)
+    
+    } finally {
+        //close connection
+        conn.awaitEnd()
     }
     
 }
@@ -208,5 +232,9 @@ module.exports.flight = async function(req, res){
     } catch(e){
         console.log(e)
         res.send(500)
+    
+    } finally {
+        //close connection
+        conn.awaitEnd()
     }
 }
