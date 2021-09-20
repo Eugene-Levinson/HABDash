@@ -180,6 +180,23 @@ async function get_user_flights(conn, user_uid){
     }
 }
 
+async function check_flight_exists(conn, flight_name){
+    try{
+        let sql_code = `SELECT * FROM flights WHERE flight_name=${conn.escape(flight_name)}`
+        let result = await send_sql(conn, sql_code)
+
+        if (result.length == 0){
+            return false
+        } else {
+            return true
+        }
+
+    } catch {
+        console.log(e)
+        throw new Error ("CheckFlightExistsError")
+    }
+}
+
 async function get_flight_info(conn, flight_name){
     try{
         var sql_code = `SELECT * FROM flights WHERE flight_name=${conn.escape(flight_name)}`
@@ -245,3 +262,4 @@ module.exports.remove_cookie_record = remove_cookie_record
 module.exports.get_user_flights = get_user_flights
 module.exports.get_flight_info = get_flight_info
 module.exports.write_raw_telem = write_raw_telem
+module.exports.check_flight_exists = check_flight_exists

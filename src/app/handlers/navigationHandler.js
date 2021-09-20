@@ -223,7 +223,7 @@ module.exports.flight = async function(req, res){
         var flights = await user.get_flights()
 
         //check if the flight exists and pass that info to the page
-        responce_data.flight_exists = flights.includes(req.params.flightId)
+        responce_data.flight_exists = await database_util.check_flight_exists(conn, req.params.flightId)
 
         res.status(200)
         res.render(PROJECT_DIR + "/src/app/static/views/templates/flight.html", {data: responce_data})
