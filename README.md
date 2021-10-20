@@ -10,6 +10,7 @@ Backlog of ideas/things to do here: https://miro.com/app/board/o9J_lEZSHis=/
 
 <br>
 
+
 # Server setup and deployment
 
 This section describes the step by step process of setting up the environment and deplying the HABDash webserver. This is not something that a user of HABDash would ever need to do but for those who want to set a copy of this up for some reason it might be usefull.
@@ -51,6 +52,15 @@ If you are not using bash refere to direnv documentation
 ## Start the server
 
 `sudo node src/app/app.js`
+
+
+# Cloud setup
+Create an project in google cloud
+Make sure that the GOOGLE_APPLICATION_CREDENTIALS is unset
+Make sure all previous accounts are unset `gcloud auth revoke --all`
+run `gcloud auth login` 
+run config < project_name >
+Make sure all secrets are added to the secrets manager
 
 Optional paramters:  
 `-m` => mode `dev` or `prod` (default set in src/app/config/common.js)  

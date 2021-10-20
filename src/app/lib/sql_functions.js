@@ -1,9 +1,10 @@
+const sqlite3 = require('sqlite3').verbose();
 var PROJECT_DIR = process.env.PROJECT_DIR  
 var secrets = require(PROJECT_DIR + '/src/app/config/secrets')
 
-
 //var mysql = require('mysql')
 const mysql = require(`mysql-await`);
+const { count } = require('yargs');
 
 //function to connect to the mysql server
 async function connectdb(dbhost, dbuser, pass, db_name){
@@ -202,7 +203,7 @@ async function get_flight_info(conn, flight_name){
         var sql_code = `SELECT * FROM flights WHERE flight_name=${conn.escape(flight_name)}`
         var flight_setup_data = await send_sql(conn, sql_code)
 
-        sql_code = `SELECT * FROM data_fields WHERE flight_name=${conn.escape(flight_name)}`
+        sql_code = `SELECT * FROM data_fields WHERE flight_name=${conn.escape(flight_name)} ORDER BY field_order ASC`
         var flight_field_data = await send_sql(conn, sql_code)
 
         sql_code = `SELECT * FROM raw_flight_data WHERE flight_name=${conn.escape(flight_name)} ORDER BY date_added DESC`
@@ -246,6 +247,42 @@ async function write_raw_telem(conn, flight_name, telem_string){
     }
 }
 
+async function gen_make_table_query(conn, table_name, colums, c_types){
+    try{
+        let fields = []
+
+        for(i in colums){
+            fields.push(`${colums[i]} ${c_types[i]}`)
+        }
+
+        let filed_string = fields.join(", ")
+
+        let q = `CREATE TABLE IF NOT EXISTS ${table_name} (${filed_string})`
+        
+        return q
+
+    } catch(e){
+        console.log(e)
+        throw new Error("GenMakeTableQuery")
+    }
+}
+
+async function gen_insert_data_query(conn, colums, values, table_name){
+    try{
+        let values_string = values.join(", ")
+        let colums_string = colums.join(", ")
+
+        let q = `INSERT INTO ${table_name} (${colums_string}) VALUES (${values_string})`
+
+        return q
+
+    } catch(e){
+        console.log(e)
+        throw new Error("GenInsertTableQuery")
+    }
+}
+
+
 
 
 
@@ -263,3 +300,5 @@ module.exports.get_user_flights = get_user_flights
 module.exports.get_flight_info = get_flight_info
 module.exports.write_raw_telem = write_raw_telem
 module.exports.check_flight_exists = check_flight_exists
+module.exports.gen_make_table_query = gen_make_table_query
+module.exports.gen_insert_data_query = gen_insert_data_query
