@@ -1,0 +1,145 @@
+#!/bin/bash
+
+SA_ACCOUNT_NAME="habdash-sa"
+SCRIPT_DIR="$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+SA_KEY_FILE="$SCRIPT_DIR/work/sa_key.json"
+
+SA_ACCOUNT="$SA_ACCOUNT_NAME@$1.iam.gserviceaccount.com"
+
+#create work dir
+mkdir -p $SCRIPT_DIR/work
+
+#take command line input
+if [ -z "$1" ]; then
+    echo "Project name wasn't passed. Exiting."
+    exit 1
+fi
+
+#set project
+if ! gcloud projects list | grep -q $1 ; then
+    echo ""
+    echo "No such project exists"
+    exit 1
+
+fi
+
+#output current account
+current_account=$(gcloud config list account --format "value(core.account)")
+echo "You are logged in as $current_account"
+
+#login into admin
+if [[ "$current_account" == *"gserviceaccount.com"* ]]; then
+    echo "You are loged in as service account"
+    echo "User account is required"
+    echo "Please login as proper user:"
+
+    gcloud auth login
+
+fi
+
+#set project
+echo ""
+echo "Setting project to $1"
+gcloud config set project $1
+
+echo "Checking that required APIs are enabled"
+
+#enable iam api
+if ! gcloud services list | grep -q "iam.googleapis.com" ; then
+    echo "Enabling IAM API"
+    gcloud services enable iam.googleapis.com
+
+fi
+
+#enable cloud resource manager
+if ! gcloud services list | grep -q "cloudresourcemanager.googleapis.com" ; then
+    echo "Enabling cloud resrouce manager"
+    gcloud services enable cloudresourcemanager.googleapis.com
+
+fi
+
+#remove service account if exists
+if gcloud iam service-accounts describe $SA_ACCOUNT; then
+    echo ""
+    echo "There is already a service account with the name '$SA_ACCOUNT_NAME'"
+    echo "Removing"
+
+    gcloud iam service-accounts delete $SA_ACCOUNT
+    rm $SA_KEY_FILE
+
+    else
+        echo ""
+    
+fi
+
+#gen new service account
+echo "Creating new service account"
+if gcloud iam service-accounts create $SA_ACCOUNT_NAME  \
+    --display-name="$SA_ACCOUNT_NAME" \
+    --description="Main service account for the habdash project" ; then
+
+    echo "Done"
+
+else
+    echo "Couldn't create a service account"
+
+fi
+
+echo ""
+
+#gen key for the service account
+echo "Generating auth key for the service account"
+
+if gcloud iam service-accounts keys create $SA_KEY_FILE \
+    --iam-account=$SA_ACCOUNT ; then
+
+    echo "Service account key was saved at $SA_KEY_FILE"
+
+else
+    echo "Failed to generate a keyfile"
+
+fi
+
+#grant required permissions
+echo ""
+echo "Granting permissions to the service account"
+
+
+#Actions Admin
+if ! gcloud projects add-iam-policy-binding $1 \
+    --member="serviceAccount:$SA_ACCOUNT" \
+    --role=roles/actions.Admin ; then
+
+    exit 1
+fi
+
+#Service Usage Admin
+if ! gcloud projects add-iam-policy-binding $1 \
+    --member="serviceAccount:$SA_ACCOUNT" \
+    --role=roles/serviceusage.serviceUsageAdmin ; then
+
+    exit 1
+fi
+
+#Service Secret manager accessor
+if ! gcloud projects add-iam-policy-binding $1 \
+    --member="serviceAccount:$SA_ACCOUNT" \
+    --role=roles/secretmanager.secretAccessor ; then
+
+    exit 1
+fi
+
+
+
+#Activating the service account
+echo ""
+echo "Activating the service account"
+
+gcloud auth activate-service-account \
+        --key-file=$SA_KEY_FILE --project=$1 
+
+
+
+
+
+
