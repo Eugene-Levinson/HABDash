@@ -6,6 +6,7 @@ module.exports.Flight = class {
     constructor(db_conn, flight_name){
         this.db_conn = db_conn
         this.flight_name = flight_name
+        this.table_name = this.get_parsed_table_name(this.flight_name)
     }
 
     async get_flight_info(flight_name) {
@@ -23,6 +24,69 @@ module.exports.Flight = class {
             throw new Error("GetFlightInfoError")
         }
     }
+
+    get_parsed_table_name(flight_name){
+
+        return `parsed_telem_${flight_name}`
+    }
+
+    get_flight_name_col_name(data_fields){
+        try{
+
+            if (data_fields != null){
+                var field = data_fields["fields"][0]
+                var field_name = field["field_name"]
+
+                field_name = field_name.replace(" ", "_")
+
+                return field_name
+            
+            } else {
+                return null
+            }
+            
+        } catch(e){
+            console.log(e)
+            throw new Error("GetFlightNameColNameError")  
+        }
+    }
+
+    async get_raw_data(flight_name){
+        try{
+
+            var raw_data = await database_util.get_raw_flight_data(this.db_conn, flight_name)
+
+            return raw_data
+        
+        } catch(e){
+            console.log(e)
+            throw new Error("GetRawFlightData")  
+        }
+
+    }
+
+    async get_parsed_data(flight_name){
+        try{
+            var field_data = await this.get_flight_info(flight_name)
+            var flight_col = this.get_flight_name_col_name(field_data)
+
+            if(field_data == null || flight_col == null){
+                return null
+            } else {
+
+                var parsed_data = await database_util.get_parsed_flight_data(this.db_conn, this.table_name, flight_name, flight_col)
+
+                return parsed_data
+
+            }
+        
+        } catch(e){
+            console.log(e)
+            throw new Error("GetParsedFlightData")  
+        }
+
+    }
+
 
     async parse_telem_string(telem, data_fields){
         try{
@@ -66,7 +130,7 @@ module.exports.Flight = class {
         }
     }
 
-    async gen_queries(parsed_telem, table_name){
+    async gen_queries(parsed_telem){
         try{
             let colums = []
             let c_types = []
@@ -85,9 +149,9 @@ module.exports.Flight = class {
             }
 
             //gen the make table query
-            let make_table_q = await database_util.gen_make_table_query(this.db_conn, table_name, colums, c_types)
+            let make_table_q = await database_util.gen_make_table_query(this.db_conn, this.table_name, colums, c_types)
 
-            let insert_data_query = await database_util.gen_insert_data_query(this.db_conn, colums, values, table_name)
+            let insert_data_query = await database_util.gen_insert_data_query(this.db_conn, colums, values, this.table_name)
 
             return [make_table_q, insert_data_query]
 

@@ -38,10 +38,7 @@ module.exports.telem_reciever = async function(req, res){
         let parsed_telem = parsed_responce["data"]
 
 
-        //generate sql for adding the data into a table
-        let table_name = `parsed_telem_${flight_name}`
-
-        let telem_table_queries = await flight_object.gen_queries(parsed_telem, table_name)
+        let telem_table_queries = await flight_object.gen_queries(parsed_telem)
 
         //run the queries
         for (q in telem_table_queries){

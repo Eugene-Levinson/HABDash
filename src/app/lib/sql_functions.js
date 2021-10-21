@@ -206,8 +206,6 @@ async function get_flight_info(conn, flight_name){
         sql_code = `SELECT * FROM data_fields WHERE flight_name=${conn.escape(flight_name)} ORDER BY field_order ASC`
         var flight_field_data = await send_sql(conn, sql_code)
 
-        sql_code = `SELECT * FROM raw_flight_data WHERE flight_name=${conn.escape(flight_name)} ORDER BY date_added DESC`
-        var raw_data = await send_sql(conn, sql_code)
 
         if (flight_setup_data == "" || flight_setup_data == undefined || flight_setup_data == {}){
             return null
@@ -222,7 +220,6 @@ async function get_flight_info(conn, flight_name){
         //combine the json together
         var combined_data = flight_setup_data[0]
         combined_data.fields = flight_field_data
-        combined_data.raw_flight_data = raw_data
         
         //return flight_data
         return combined_data
@@ -231,6 +228,42 @@ async function get_flight_info(conn, flight_name){
         console.log(e)
         throw new Error("GetUserFlightsError")
     }
+}
+
+async function get_raw_flight_data(conn, flight_name){
+    try{
+        sql_code = `SELECT * FROM raw_flight_data WHERE flight_name=${conn.escape(flight_name)} ORDER BY date_added DESC`
+        var raw_data = await send_sql(conn, sql_code)
+
+        if (raw_data == "" || raw_data == undefined || raw_data == {}){
+            return null
+        }
+
+        return raw_data
+    
+    } catch(e){
+        console.log(e)
+        throw new Error("GetUserFlightsError")
+    }
+
+}
+
+async function get_parsed_flight_data(conn, table_name, flight_name, flight_col){
+    try{
+        sql_code = `SELECT * FROM ${table_name} WHERE ${flight_col}=${conn.escape(flight_name)} ORDER BY date_added DESC`
+        var parsed = await send_sql(conn, sql_code)
+
+        if (parsed == "" || parsed == undefined || parsed == {}){
+            return null
+        }
+
+        return parsed
+    
+    } catch(e){
+        console.log(e)
+        throw new Error("GetUserFlightsError")
+    }
+
 }
 
 async function write_raw_telem(conn, flight_name, telem_string){
@@ -255,6 +288,8 @@ async function gen_make_table_query(conn, table_name, colums, c_types){
             fields.push(`${colums[i]} ${c_types[i]}`)
         }
 
+        fields.push(`date_added DATETIME`)
+
         let filed_string = fields.join(", ")
 
         let q = `CREATE TABLE IF NOT EXISTS ${table_name} (${filed_string})`
@@ -269,6 +304,11 @@ async function gen_make_table_query(conn, table_name, colums, c_types){
 
 async function gen_insert_data_query(conn, colums, values, table_name){
     try{
+        var date_now = new Date().toISOString().slice(0, 19).replace('T', ' ');
+        values.push(`"${date_now}"`)
+
+        colums.push("date_added")
+
         let values_string = values.join(", ")
         let colums_string = colums.join(", ")
 
@@ -302,3 +342,5 @@ module.exports.write_raw_telem = write_raw_telem
 module.exports.check_flight_exists = check_flight_exists
 module.exports.gen_make_table_query = gen_make_table_query
 module.exports.gen_insert_data_query = gen_insert_data_query
+module.exports.get_raw_flight_data = get_raw_flight_data
+module.exports.get_parsed_flight_data = get_parsed_flight_data
