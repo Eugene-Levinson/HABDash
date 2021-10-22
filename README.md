@@ -56,11 +56,16 @@ If you are not using bash refere to direnv documentation
 
 # Cloud setup
 Create an project in google cloud
+Enable mpas api
+Generate token for maps api
+Add maps token to secrets
+Make sure all secrets are added to the secrets manager
+
 Make sure that the GOOGLE_APPLICATION_CREDENTIALS is unset
 Make sure all previous accounts are unset `gcloud auth revoke --all`
 run `gcloud auth login` 
 run config < project_name >
-Make sure all secrets are added to the secrets manager
+
 
 Optional paramters:  
 `-m` => mode `dev` or `prod` (default set in src/app/config/common.js)  
