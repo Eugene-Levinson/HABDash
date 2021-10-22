@@ -78,8 +78,6 @@ module.exports.registerPage = async function(req, res){
 
         //redirect to dashboard if already authenticated
         if (valid_cookie){
-            //close connection
-            conn.awaitEnd()
             
             //redirect to dashboard
             res.redirect('/dashboard')
@@ -116,8 +114,6 @@ module.exports.loginPage = async function(req, res){
 
         //redirect to dashboard if already authenticated
         if (valid_cookie){
-            //close connection
-            conn.awaitEnd()
 
             //redirect to dashboard
             res.redirect('/dashboard')
@@ -154,8 +150,6 @@ module.exports.loginPage = async function(req, res){
 
         //redirect to login if invalid auth token
         if (!valid_cookie){
-            //close connection
-            conn.awaitEnd()
 
             //redirect back to login
             res.redirect('/login')

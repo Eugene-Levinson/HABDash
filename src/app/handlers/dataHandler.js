@@ -56,7 +56,6 @@ module.exports.registerNewUser = async function(req, res){
         if (errors.length != 0) {
             //finish db transaction and close the connection
             await conn.awaitCommit()
-            conn.awaitEnd()
 
             //prep the responce data for ajax
             var responce_data = {}
@@ -83,9 +82,6 @@ module.exports.registerNewUser = async function(req, res){
         
         //save all db changes
         await conn.awaitCommit()
-
-        //close the connection
-        conn.awaitEnd()
 
 
         //prep the responce data for ajax
@@ -169,7 +165,6 @@ module.exports.loginUser = async function(req, res){
         //respond with error messages if there are errors
         if (errors.length != 0) {
             await conn.awaitCommit()
-            conn.awaitEnd()
 
 
             //prep the responce data for ajax
