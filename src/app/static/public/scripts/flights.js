@@ -10,37 +10,35 @@ function gen_telem_table(data, fields){
         var name = fields[f]["field_name"]
         var name_sc = fields[f]["field_name_sc"]
 
-        col_names_list.push(name)
+        col_names_list.push(`\n  <th scope="col">${name}</th>`)
         col_names_list_snake.push(name_sc)
     }
 
     //data points for the table
     for(col in col_names_list_snake){
         var data_point = data[col_names_list_snake[col]]
-        data_points_list.push(data_point) 
+        data_points_list.push(`\n  <td>${data_point}</td>`) 
     }
 
-    //gen html for the colums
-    var col_names_html = ""
+    //combine lables and data points
+    var rows_html = ""
     for (n in col_names_list){
         var name = col_names_list[n]
-        col_names_html += `\n  <th scope="col">${name}</th>`
-    }
+        var data_point = data_points_list[n]
 
-    var row_html = ""//`\n  <th scope="row"></th>`
-    for (dp in data_points_list){
-        var data_point = data_points_list[dp]
-        row_html += `\n  <td>${data_point}</td>`
-
+        var row = `
+        <tr> 
+            ${name}
+            ${data_point}
+        </tr>
+        `
+        rows_html += row
     }
 
     table_html = `
     <table class="table">
-        <thead>
-            <tr>${col_names_html}</tr>
-        </thead>
         <tbody>
-            <tr>${row_html}</tr>
+            ${rows_html}
         </tbody>
     </table>
     `
