@@ -213,6 +213,7 @@ async function get_flight_info(conn, flight_name){
 
         for (i in flight_field_data){
             flight_field_data[i].chart_data = flight_field_data[i].chart_data.readUIntLE()
+            flight_field_data[i].field_name_sc = flight_field_data[i].field_name.replace(" ", "_")
 
             //console.log(flight_field_data[i]["flight_name"])
         }
