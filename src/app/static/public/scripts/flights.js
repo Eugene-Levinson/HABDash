@@ -1,3 +1,17 @@
+function initMap() {
+    map = new google.maps.Map(document.getElementById("map"), {
+      center: { lat: 51.5868, lng: -1.8904 },
+      zoom: 8,
+    });
+
+    flightPath = new google.maps.Polyline({
+        strokeColor: "#000000",
+        strokeOpacity: 1.0,
+        strokeWeight: 3,
+      });
+      flightPath.setMap(map);
+    
+  }
 
 function gen_telem_table(data, fields){
     var col_names_list = []
@@ -47,6 +61,36 @@ function gen_telem_table(data, fields){
 
 }
 
+function gen_map_data(data, flight_info){
+    var coords = []
+
+    var lat_fn = flight_info["lat_field_name"]
+    var lon_fn = flight_info["lon_field_name"]
+
+    for (d in data){
+        var latlng = new google.maps.LatLng(parseFloat(data[d][lat_fn]), parseFloat(data[d][lon_fn]))
+        coords.push(latlng)
+    }
+    return coords
+
+}
+
+function get_last_coords(data, flight_info){
+    var lat_fn = flight_info["lat_field_name"]
+    var lon_fn = flight_info["lon_field_name"]
+
+    var latitude = parseFloat(data[0][lat_fn])
+    var longitude = parseFloat(data[0][lon_fn])
+
+    return {"lat":latitude, "lon":longitude}
+
+}
+
+function recenter_map(lat, lon){
+    let lat_lon = new google.maps.LatLng(lat, lon)
+    map.setCenter(lat_lon)
+}
+
 async function update_data(){
     try{
         //set api endpoints
@@ -80,11 +124,35 @@ async function update_data(){
         }
 
 
-        //console.log(flight_info)
-        //console.log(parsed_data)
+        /// UPDATING ///
+
+        //update telem table
         var telem_table_html = gen_telem_table(parsed_data[0], flight_info["fields"])
-        
         document.getElementById("telem_table").innerHTML = telem_table_html
+
+        //update flight path
+        var new_coords = gen_map_data(parsed_data, flight_info)
+
+        const path = flightPath.getPath();
+        path.clear()
+
+        for (i in new_coords){
+            path.push(new_coords[i])
+        }
+
+
+
+
+        
+        // flightPath = new google.maps.Polyline({
+        //     path: new_coords,
+        //     geodesic: true,
+        //     strokeColor: "#FF0000",
+        //     strokeOpacity: 1.0,
+        //     strokeWeight: 2,
+        //   });
+        
+        // flightPath.setMap(map)
 
         console.log("updated")
     } catch(e){
@@ -92,6 +160,16 @@ async function update_data(){
     }
      
 }
+
+// global map objects
+var map;
+var flightPath;
+
+initMap()
 update_data()
 setInterval(update_data, 10000);
-//update_data()
+
+
+
+
+

@@ -212,6 +212,7 @@ module.exports.flight = async function(req, res){
         }
 
         responce_data.flightId = req.params.flightId
+        responce_data.maps_api_url = `https://maps.googleapis.com/maps/api/js?key=${secrets.MAPS_KEY}`
 
         //get the list of flights the user owns
         var flights = await user.get_flights()
