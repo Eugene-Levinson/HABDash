@@ -1,7 +1,7 @@
 function initMap() {
     map = new google.maps.Map(document.getElementById("map"), {
       center: { lat: 51.5868, lng: -1.8904 },
-      zoom: 8,
+      zoom: 6,
     });
 
     flightPath = new google.maps.Polyline({
@@ -91,13 +91,16 @@ function recenter_map(lat, lon){
     map.setCenter(lat_lon)
 }
 
-async function update_data(){
+async function fetch_data(){
     try{
         //set api endpoints
         let current_url = window.location.href
         const flight_name = current_url.substring(current_url.lastIndexOf('/') + 1)
         const parsed_data_api = `/api/get-parsed-data/${flight_name}`
         const flight_info_api = `/api/get-flight/${flight_name}`
+
+
+        /// FETCH DATA ///
 
         //fetch parsed data
         var parsed_data_responce = await fetch(parsed_data_api)
@@ -123,6 +126,20 @@ async function update_data(){
             var flight_info = await flight_info_responce.json()
         }
 
+        return {"flight_info" : flight_info, "parsed_data": parsed_data}
+
+    } catch (e){
+        console.error(e)
+    }
+
+}
+
+async function update_data(){
+    try{
+        /// GET DATA ///
+        var all_data = await fetch_data()
+        var parsed_data = all_data["parsed_data"]
+        var flight_info = all_data["flight_info"]
 
         /// UPDATING ///
 
@@ -130,29 +147,26 @@ async function update_data(){
         var telem_table_html = gen_telem_table(parsed_data[0], flight_info["fields"])
         document.getElementById("telem_table").innerHTML = telem_table_html
 
-        //update flight path
+        //thatsnform new data into LatLng objects
         var new_coords = gen_map_data(parsed_data, flight_info)
 
+        //clear old path
         const path = flightPath.getPath();
         path.clear()
 
+        //push mewly fetch coords
         for (i in new_coords){
             path.push(new_coords[i])
         }
 
+        //recenter on first fetch
+        if (!initial_recenter){
+            map.setCenter(new_coords[0])
+            initial_recenter = true
+        }
 
-
-
-        
-        // flightPath = new google.maps.Polyline({
-        //     path: new_coords,
-        //     geodesic: true,
-        //     strokeColor: "#FF0000",
-        //     strokeOpacity: 1.0,
-        //     strokeWeight: 2,
-        //   });
-        
-        // flightPath.setMap(map)
+        //update the last fetch date
+        last_fetch_date = new Date()
 
         console.log("updated")
     } catch(e){
@@ -161,13 +175,42 @@ async function update_data(){
      
 }
 
+function update_last_fetched(){
+     //update the "last updated" html
+     var now = new Date()
+
+     if (last_fetch_date != null){
+         var time_diff = (now.getTime() - last_fetch_date.getTime())
+         var date_updated = Math.ceil((time_diff/1000))
+ 
+ 
+         document.getElementById("last_update_value").innerHTML = `${date_updated}s ago`
+     } else {
+         document.getElementById("last_update_value").innerHTML = ""
+     }
+}
+async function every_second(){
+
+    //update "last fetched"
+    update_last_fetched()
+}
+
+
+
+
+
 // global map objects
 var map;
 var flightPath;
+var last_fetch_date = null
+var initial_recenter = false
 
+//function calls
 initMap()
 update_data()
+every_second()
 setInterval(update_data, 10000);
+setInterval(every_second, 1000);
 
 
 
