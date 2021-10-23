@@ -4,12 +4,21 @@ function initMap() {
       zoom: 6,
     });
 
+    let marker_icon = get_marker_icon()
+    let flight_colour = "#000000"
+
     flightPath = new google.maps.Polyline({
-        strokeColor: "#000000",
+        strokeColor: flight_colour,
         strokeOpacity: 1.0,
         strokeWeight: 3,
       });
       flightPath.setMap(map);
+
+       payload_marker =  new google.maps.Marker({
+        map,
+        title: "Hello World!",
+        icon: marker_icon
+      });
     
   }
 
@@ -91,6 +100,17 @@ function recenter_map(lat, lon){
     map.setCenter(lat_lon)
 }
 
+function get_marker_icon(){
+    let size = new google.maps.Size(96, 96)
+
+    let icon ={
+        url: "https://www.habdash.org/assets/map_marker_hover_100.png",
+        scaledSize: size
+    }
+
+    return icon
+}
+
 async function fetch_data(){
     try{
         //set api endpoints
@@ -149,6 +169,7 @@ async function update_data(){
 
         //thatsnform new data into LatLng objects
         var new_coords = gen_map_data(parsed_data, flight_info)
+        var latest_coords = new_coords[0]
 
         //clear old path
         const path = flightPath.getPath();
@@ -161,9 +182,12 @@ async function update_data(){
 
         //recenter on first fetch
         if (!initial_recenter){
-            map.setCenter(new_coords[0])
+            map.setCenter(latest_coords)
             initial_recenter = true
         }
+
+        //update payload marker position
+        payload_marker.setPosition(latest_coords)
 
         //update the last fetch date
         last_fetch_date = new Date()
@@ -199,11 +223,12 @@ async function every_second(){
 
 
 
-// global map objects
+// global objects
 var map;
 var flightPath;
-var last_fetch_date = null
-var initial_recenter = false
+var payload_marker;
+var last_fetch_date = null;
+var initial_recenter = false;
 
 //function calls
 initMap()
