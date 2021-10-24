@@ -1,3 +1,50 @@
+class NiteOverlayControl{
+    constructor(niteControlDiv, map_, overlay_is_on){
+        this.map_ = map_;
+        this.overlay_is_on = overlay_is_on
+
+        niteControlDiv.style.clear = "both";
+
+        // Set CSS for the control border
+        this.switch_nite = document.createElement("div");
+
+        this.switch_nite.id = "switch_nite_control";
+        this.switch_nite.className = "nite-icon"
+        
+        var button_hover_msg  = "Toggle day/night overlay"
+
+        this.switch_nite.title = button_hover_msg
+
+        niteControlDiv.appendChild(this.switch_nite);
+
+        // Set CSS for the control interior
+        this.switch_nite_text = document.createElement("div");
+
+        var btn_msg  = "Night Overlay On"
+        if (this.overlay_is_on){
+            btn_msg  = "Night Overlay OFF"
+        }
+
+        this.switch_nite_text.id = "switch_nite_text";
+        //this.switch_nite_text.innerHTML = btn_msg;
+        this.switch_nite.appendChild(this.switch_nite_text);
+
+        this.switch_nite.addEventListener("click", () => {
+            if (this.overlay_is_on){
+                nite.hide()
+                this.overlay_is_on = false
+            
+            }  else {
+                nite.show()
+                nite.refresh()
+                this.overlay_is_on = true
+            }
+
+          });
+
+    }
+}
+
 function initMap() {
     map = new google.maps.Map(document.getElementById("map"), {
       center: { lat: 51.5868, lng: -1.8904 },
@@ -12,15 +59,34 @@ function initMap() {
         strokeOpacity: 1.0,
         strokeWeight: 3,
       });
-      flightPath.setMap(map);
 
-       payload_marker =  new google.maps.Marker({
-        map,
-        title: "Hello World!",
-        icon: marker_icon
-      });
+    flightPath.setMap(map);
+
+    payload_marker =  new google.maps.Marker({
+    map,
+    icon: marker_icon
+    });
+
+    // Create the DIV to hold the control and call the CenterControl()
+    // constructor passing in this DIV.
+    const niteControlDiv = document.createElement("nite-div");
+    niteControlDiv.index = 1;
+    niteControlDiv.style.paddingTop = "10px";
+
+    const control = new NiteOverlayControl(niteControlDiv, map, false);
+    map.controls[google.maps.ControlPosition.RIGHT_TOP].push(niteControlDiv);
+
     
   }
+
+
+function initNiteOverlay(google_map){
+    //nite overlay - make sure its imported
+    nite.init(google_map);
+
+    //hide its by default
+    nite.hide()
+}
 
 function gen_telem_table(data, fields){
     var col_names_list = []
@@ -101,10 +167,10 @@ function recenter_map(lat, lon){
 }
 
 function get_marker_icon(){
-    let size = new google.maps.Size(96, 96)
-
+    //let size = new google.maps.Size(96, 120)
+    let size = new google.maps.Size(76.8,96)
     let icon ={
-        url: "https://www.habdash.org/assets/map_marker_hover_100.png",
+        url: "https://www.habdash.org/assets/map_marker_hover_4-5.png",
         scaledSize: size
     }
 
@@ -213,7 +279,7 @@ function update_last_fetched(){
          document.getElementById("last_update_value").innerHTML = ""
      }
 }
-async function every_second(){
+function every_second(){
 
     //update "last fetched"
     update_last_fetched()
@@ -232,10 +298,13 @@ var initial_recenter = false;
 
 //function calls
 initMap()
+initNiteOverlay(map)
 update_data()
-every_second()
+update_last_fetched()
+
 setInterval(update_data, 10000);
 setInterval(every_second, 1000);
+setInterval(function() { nite.refresh() }, 10000);
 
 
 

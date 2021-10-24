@@ -1,0 +1,29 @@
+#switch_nite_control {
+background-color: #fff;
+border: 2px solid #fff;
+border-radius: 3px;
+box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+cursor: pointer;
+float: left;
+margin: 10px;
+text-align: center;
+width: 40px;
+height: 40px;
+}
+
+#switch_nite_control:hover{
+background-color:#F5F5F5;
+border: 2px solid #F5F5F5;
+}
+
+#switch_nite_text {
+color: #191919;
+font-family: Roboto, Arial, sans-serif;
+font-size: 15px;
+line-height: 25px;
+padding: 2px;
+content:url(/assets/favicon-512.png);
+width: 100%;
+height: auto;
+
+}
