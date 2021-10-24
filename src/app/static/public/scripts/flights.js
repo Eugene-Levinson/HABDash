@@ -76,7 +76,7 @@ function initMap() {
     const control = new NiteOverlayControl(niteControlDiv, map, false);
     map.controls[google.maps.ControlPosition.RIGHT_TOP].push(niteControlDiv);
 
-    
+    console.log("Maps loaded")
   }
 
 
@@ -177,6 +177,153 @@ function get_marker_icon(){
     return icon
 }
 
+function addDataToChart(chart, label, data) {
+    chart.data.labels.push(label);
+    chart.data.datasets.forEach((dataset) => {
+        dataset.data.push(data);
+    });
+    chart.update();
+}
+
+function removeDataFromChart(chart) {
+    chart.data.labels = []
+    chart.data.datasets.forEach((dataset) => {
+        dataset.data = [];
+    });
+    chart.update();
+}
+
+
+async function update_graphs(data, flight_info){
+    return new Promise(resolve => {
+        let data_fields = flight_info["fields"]
+
+        // if no graphs on the page then make some
+        if (!graphs_created){
+            graphs = {}
+            var graphs_html = []
+            var data_fields_to_chart = []
+
+            //generated html divs for all required graphs
+            for (i in data_fields){
+                var data_field = data_fields[i]
+
+                if (data_field["chart_data"] == 1){
+                    let graph_id = get_graph_id(data_field["field_name_sc"])
+                    
+                    let graph_div = `                        
+                    <div class="d-flex justify-content-center">
+                        <canvas id="${graph_id}" class=""></canvas>
+                    </div>
+                    `
+                    graphs_html.push(graph_div)
+
+                    //record fields that need to be graphed
+                    data_fields_to_chart.push({
+                        id: graph_id,
+                        field_name_sc: data_field["field_name_sc"],
+                        field_name: data_field["field_name"]
+                    })  
+                }
+            }
+
+            //add the divs to the page - graphs will go in them
+            var graphs_div_element = document.getElementById(graphs_div_id)
+            var count = 0
+
+            graphs_div_element.innerHTML = ""
+            for (i in graphs_html){
+                graphs_div_element.innerHTML += `\n${graphs_html[i]}`
+                count += 1
+
+                if (count % 1 == 0){
+                    graphs_div_element.innerHTML += '\n<div class="w-100"></div>'
+                }
+            }
+
+            //generate graph objects
+            for (g in data_fields_to_chart){
+                var field = data_fields_to_chart[g]
+                var ctx = document.getElementById(field.id)
+
+                //data and labels
+                const labels = [];
+                const data = {
+                    labels: labels,
+                    datasets: [{
+                    label: `${field["field_name"]}`,
+                    backgroundColor: 'rgb(255, 99, 132)',
+                    borderColor: 'rgb(255, 99, 132)',
+                    borderWidth: 2,
+                    data: [],
+                    }]
+                };
+                
+                //chart config
+                const config = {
+                    type: 'line',
+                    data: data,
+                    options: {
+                        scales: {
+                            x: {
+                                ticks: {
+                                    maxTicksLimit: 4
+                                }
+                            }
+                        },
+
+                        animation: false,
+
+                        elements: {
+                            point:{
+                                radius: 0.25
+                            }
+                        }
+                    }
+                };
+
+                //make a chart object and add it to the graphs dict
+                const myChart = new Chart(ctx, config)
+
+                graphs[field.id] = {
+                    chart_object : myChart,
+                    data_field_sc : field[["field_name_sc"]]
+
+                }
+        
+            }
+            graphs_created = true;
+        }
+
+        //fill graphs with data
+        for (chart_id in graphs){
+            var chart = graphs[chart_id]["chart_object"]
+            var data_field = graphs[chart_id]["data_field_sc"]
+
+            var count = 0
+
+            //remove all data from chart
+            removeDataFromChart(chart)
+
+
+            for (i in data){
+                data_point = data[i][data_field]
+                addDataToChart(chart, (data.length - count), data_point)
+                count += 1
+            }
+
+        }
+
+        resolve('resolved')
+
+    });
+
+}
+
+function get_graph_id(f_name){
+    return `${f_name}-graph`
+}
+
 async function fetch_data(){
     try{
         //set api endpoints
@@ -228,6 +375,9 @@ async function update_data(){
         var flight_info = all_data["flight_info"]
 
         /// UPDATING ///
+        global_parsed_data = parsed_data
+        global_flight_info = flight_info
+
 
         //update telem table
         var telem_table_html = gen_telem_table(parsed_data[0], flight_info["fields"])
@@ -255,6 +405,14 @@ async function update_data(){
         //update payload marker position
         payload_marker.setPosition(latest_coords)
 
+        //update graphs
+        if (graphs_created){
+            update_graphs(parsed_data, flight_info)
+        } else {
+            document.dispatchEvent(ChartsCreationTimeEvent);
+        }
+        
+
         //update the last fetch date
         last_fetch_date = new Date()
 
@@ -276,7 +434,7 @@ function update_last_fetched(){
  
          document.getElementById("last_update_value").innerHTML = `${date_updated}s ago`
      } else {
-         document.getElementById("last_update_value").innerHTML = ""
+         document.getElementById("last_update_value").innerHTML = "Loading..."
      }
 }
 function every_second(){
@@ -288,13 +446,22 @@ function every_second(){
 
 
 
-
 // global objects
 var map;
 var flightPath;
 var payload_marker;
+var graphs;
+var global_parsed_data;
+var global_flight_info;
+
 var last_fetch_date = null;
 var initial_recenter = false;
+var graphs_div_id = "graphs"
+var graphs_created = false;
+const ChartsCreationTimeEvent = new Event('TimeToCreateCharts');
+
+//Bodged way to make charts wait before rendering them selves
+document.addEventListener('TimeToCreateCharts', function (e) {setTimeout(function() {update_graphs(global_parsed_data, global_flight_info)}, 10)}, false);
 
 //function calls
 initMap()
