@@ -267,8 +267,8 @@ async function createOrUpdateGraphs(data, flight_info){
                         scales: {
                             x: {
                                 ticks: {
-                                    maxTicksLimit: 4
-                                }
+                                    maxTicksLimit: 3
+                                },      
                             }
                         },
 
@@ -278,7 +278,7 @@ async function createOrUpdateGraphs(data, flight_info){
                             },
 
                             hover: {
-                                animationDuration: 0 // duration of animations when hovering an item
+                                animationDuration: 1 // duration of animations when hovering an item
                             },
                             line: {
                                 tension: 0 // disables bezier curves
@@ -312,15 +312,19 @@ async function createOrUpdateGraphs(data, flight_info){
 
             //push new data to the chart
             for (i in data){
+                let datetime_stamp = data[i]["date_added"]
+                let time_stamp = datetime_stamp.replace("Z", "").split("T")[1].split(":").slice(0, 2).join(":")
+
+
                 data_point = data[i][data_field]
-                addDataToChart(chart, (chart_data_limit - count), data_point)
+                addDataToChart(chart, time_stamp, data_point)
                 count += 1
             }
 
             //if not enough data points to rich the chart_data_limit limit
             //then we fill the rest with 0s
             while (count < chart_data_limit){
-                addDataToChart(chart, (chart_data_limit - count), null)
+                addDataToChart(chart, 0, null)
                 count += 1
             }
 
