@@ -14,7 +14,7 @@ module.exports.get_flight_data = async function(req, res){
 
         if (flight_data == null){
             
-            res.status(404)
+            res.status(200)
             res.send({})
             return
         }

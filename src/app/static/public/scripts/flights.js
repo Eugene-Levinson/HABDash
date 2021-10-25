@@ -89,6 +89,12 @@ function initNiteOverlay(google_map){
 }
 
 function gen_telem_table(data, fields){
+    if (data != null && data != {} && data != undefined){
+        var data = data[0]
+    } else {
+        var data = false
+    }
+
     var col_names_list = []
     var col_names_list_snake = []
 
@@ -105,7 +111,13 @@ function gen_telem_table(data, fields){
 
     //data points for the table
     for(col in col_names_list_snake){
-        var data_point = data[col_names_list_snake[col]]
+        //if data is a thing and not undefined
+        if (data){
+            var data_point = data[col_names_list_snake[col]]
+        } else {
+            var data_point = "No Data Avaliable"
+        }
+       
         data_points_list.push(`\n  <td>${data_point}</td>`) 
     }
 
@@ -377,10 +389,29 @@ async function fetch_data(){
             var flight_info = await flight_info_responce.json()
         }
 
+        //check if data is empty
+        if (flight_info == null){
+            flight_info = null
+
+        } else if (Object.keys(flight_info).length === 0 && flight_info.constructor === Object || flight_info == undefined){
+            flight_info = null
+        }
+
+        if (parsed_data == null){
+            parsed_data == null
+
+        } else if (Object.keys(parsed_data).length === 0 && parsed_data.constructor === Object || parsed_data == undefined){
+            parsed_data = null
+        }
+
         return {"flight_info" : flight_info, "parsed_data": parsed_data}
 
     } catch (e){
         console.error(e)
+        document.getElementById("alerts").innerHTML = `
+        <div class="alert alert-danger" role="alert">
+            Failed to fetch data from the server. If this is a temporary error the page will load your data in the next few minutes. If you keep seeing this error please contact support. 
+        </div>`
     }
 
 }
@@ -396,41 +427,67 @@ async function update_data(){
         global_parsed_data = parsed_data
         global_flight_info = flight_info
 
+        //we can't do anything if flight into is null
+        if (flight_info == null){
+            console.error("Requesting flight info returned null. Either this flight does not exist or flight configuration could not be found")
+
+            document.getElementById("alerts").innerHTML = `
+            <div class="alert alert-danger" role="alert">
+                Requesting flight info returned null. Either this flight does not exist or flight configuration could not be found. 
+            </div>`
+            return
+        }
 
         //update telem table
-        var telem_table_html = gen_telem_table(parsed_data[0], flight_info["fields"])
+        //telem table can handle undfined data
+        var telem_table_html = gen_telem_table(parsed_data, flight_info["fields"])
         document.getElementById("telem_table").innerHTML = telem_table_html
 
-        //thatsnform new data into LatLng objects
-        var new_coords = gen_map_data(parsed_data, flight_info)
-        var latest_coords = new_coords[0]
+        //not run anything else if data is null
+        if (parsed_data != null){
+            //transform new data into LatLng objects
+            var new_coords = gen_map_data(parsed_data, flight_info)
+            var latest_coords = new_coords[0]
 
-        //clear old path
-        const path = flightPath.getPath();
-        path.clear()
+            //clear old path
+            const path = flightPath.getPath();
+            path.clear()
 
-        //push mewly fetch coords
-        for (i in new_coords){
-            path.push(new_coords[i])
+            //push mewly fetch coords
+            for (i in new_coords){
+                path.push(new_coords[i])
+            }
+
+            //recenter on first fetch
+            if (!initial_recenter){
+                map.setCenter(latest_coords)
+                initial_recenter = true
+            }
+
+            //update payload marker position
+            payload_marker.setPosition(latest_coords)
+
+            //update graphs
+            let sliced_data = parsed_data.slice(1, chart_data_limit)
+            await createOrUpdateGraphs(sliced_data, flight_info)
+
+            //update the last fetch date
+            last_fetch_date = new Date()
+
+            //reset any alerts
+            document.getElementById("alerts").innerHTML = ""
+
+            console.log("updated")
+        } else {
+            console.warn("No parsed Data is avaliable")
+            document.getElementById(graphs_div_id).innerHTML = "No data avaliable to render charts"
+
+            //set allert for no data
+            document.getElementById("alerts").innerHTML = `
+                <div class="alert alert-warning" role="alert">
+                    It looks like there is no parsed data avaliable for this flight. This is likely because no data has been uploaded for this flight.
+                </div>`
         }
-
-        //recenter on first fetch
-        if (!initial_recenter){
-            map.setCenter(latest_coords)
-            initial_recenter = true
-        }
-
-        //update payload marker position
-        payload_marker.setPosition(latest_coords)
-
-        //update graphs
-        let sliced_data = parsed_data.slice(1, chart_data_limit)
-        await createOrUpdateGraphs(sliced_data, flight_info)
-
-        //update the last fetch date
-        last_fetch_date = new Date()
-
-        console.log("updated")
     } catch(e){
         console.error(e)
     }

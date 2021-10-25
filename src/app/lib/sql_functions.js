@@ -209,6 +209,9 @@ async function get_flight_info(conn, flight_name){
 
         if (flight_setup_data == "" || flight_setup_data == undefined || flight_setup_data == {}){
             return null
+
+        } else if (flight_field_data == "" || flight_field_data == undefined || flight_field_data == {}){
+            return null
         }
 
         for (i in flight_field_data){
