@@ -519,6 +519,9 @@ async function update_data(){
                 <div class="alert alert-warning" role="alert">
                     It looks like there is no parsed data avaliable for this flight. This is likely because no data has been uploaded for this flight.
                 </div>`
+
+            // set to false so that when data is found graphs would be re-drawn
+            graphs_created = false;
         }
     } catch(e){
         console.error(e)
