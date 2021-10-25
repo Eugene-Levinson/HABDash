@@ -182,7 +182,6 @@ function addDataToChart(chart, label, data) {
     chart.data.datasets.forEach((dataset) => {
         dataset.data.push(data);
     });
-    chart.update();
 }
 
 function removeDataFromChart(chart) {
@@ -190,7 +189,6 @@ function removeDataFromChart(chart) {
     chart.data.datasets.forEach((dataset) => {
         dataset.data = [];
     });
-    chart.update();
 }
 
 
@@ -259,8 +257,8 @@ async function update_graphs(data, flight_info){
                     }]
                 };
                 
-                //chart config
-                const config = {
+                 //chart config
+                 const config = {
                     type: 'line',
                     data: data,
                     options: {
@@ -273,11 +271,18 @@ async function update_graphs(data, flight_info){
                         },
 
                         animation: false,
+                        responsiveAnimationDuration: 0,
+                        hover: {
+                            animationDuration: 0 // duration of animations when hovering an item
+                          },
 
                         elements: {
                             point:{
                                 radius: 0.25
-                            }
+                            },
+                            line: {
+                                tension: 0 // disables bezier curves
+                              }
                         }
                     }
                 };
@@ -305,12 +310,15 @@ async function update_graphs(data, flight_info){
             //remove all data from chart
             removeDataFromChart(chart)
 
-
+            //push new data to the chart
             for (i in data){
                 data_point = data[i][data_field]
                 addDataToChart(chart, (data.length - count), data_point)
                 count += 1
             }
+
+            //update the chart
+            chart.update();
 
         }
 
