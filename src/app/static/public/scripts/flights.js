@@ -192,7 +192,7 @@ function removeDataFromChart(chart) {
 }
 
 
-async function update_graphs(data, flight_info){
+async function createOrUpdateGraphs(data, flight_info){
     return new Promise(resolve => {
         let data_fields = flight_info["fields"]
 
@@ -262,6 +262,8 @@ async function update_graphs(data, flight_info){
                     type: 'line',
                     data: data,
                     options: {
+                        animation: false,
+                        responsiveAnimationDuration: 0,
                         scales: {
                             x: {
                                 ticks: {
@@ -270,15 +272,13 @@ async function update_graphs(data, flight_info){
                             }
                         },
 
-                        animation: false,
-                        responsiveAnimationDuration: 0,
-                        hover: {
-                            animationDuration: 0 // duration of animations when hovering an item
-                          },
-
                         elements: {
                             point:{
                                 radius: 0.25
+                            },
+
+                            hover: {
+                                animationDuration: 0 // duration of animations when hovering an item
                             },
                             line: {
                                 tension: 0 // disables bezier curves
@@ -290,13 +290,13 @@ async function update_graphs(data, flight_info){
                 //make a chart object and add it to the graphs dict
                 const myChart = new Chart(ctx, config)
 
+                //add generated graphs to global object
                 graphs[field.id] = {
                     chart_object : myChart,
                     data_field_sc : field[["field_name_sc"]]
-
                 }
-        
             }
+
             graphs_created = true;
         }
 
@@ -313,17 +313,23 @@ async function update_graphs(data, flight_info){
             //push new data to the chart
             for (i in data){
                 data_point = data[i][data_field]
-                addDataToChart(chart, (data.length - count), data_point)
+                addDataToChart(chart, (chart_data_limit - count), data_point)
+                count += 1
+            }
+
+            //if not enough data points to rich the chart_data_limit limit
+            //then we fill the rest with 0s
+            while (count < chart_data_limit){
+                addDataToChart(chart, (chart_data_limit - count), null)
                 count += 1
             }
 
             //update the chart
             chart.update();
-
         }
 
+        //resolve async promise
         resolve('resolved')
-
     });
 
 }
@@ -414,12 +420,8 @@ async function update_data(){
         payload_marker.setPosition(latest_coords)
 
         //update graphs
-        if (graphs_created){
-            update_graphs(parsed_data, flight_info)
-        } else {
-            document.dispatchEvent(ChartsCreationTimeEvent);
-        }
-        
+        let sliced_data = parsed_data.slice(1, chart_data_limit)
+        await createOrUpdateGraphs(sliced_data, flight_info)
 
         //update the last fetch date
         last_fetch_date = new Date()
@@ -445,8 +447,8 @@ function update_last_fetched(){
          document.getElementById("last_update_value").innerHTML = "Loading..."
      }
 }
-function every_second(){
 
+function every_second(){
     //update "last fetched"
     update_last_fetched()
 }
@@ -466,10 +468,8 @@ var last_fetch_date = null;
 var initial_recenter = false;
 var graphs_div_id = "graphs"
 var graphs_created = false;
-const ChartsCreationTimeEvent = new Event('TimeToCreateCharts');
+var chart_data_limit = 150;
 
-//Bodged way to make charts wait before rendering them selves
-document.addEventListener('TimeToCreateCharts', function (e) {setTimeout(function() {update_graphs(global_parsed_data, global_flight_info)}, 10)}, false);
 
 //function calls
 initMap()
