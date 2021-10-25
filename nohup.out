@@ -1,0 +1,5 @@
+[33m RUN_MODE set to prod (using CLI Args)
+[32m HTTP port 80 set from config
+[32m HTTPS port 443 set from config
+[32m Started the HTTPS Server
+[36m Redirecting http -> https

@@ -1,3 +1,12 @@
+Object.size = function(obj) {
+    var size = 0,
+      key;
+    for (key in obj) {
+      if (obj.hasOwnProperty(key)) size++;
+    }
+    return size;
+  };
+
 class NiteOverlayControl{
     constructor(niteControlDiv, map_, overlay_is_on){
         this.map_ = map_;
@@ -109,6 +118,11 @@ function gen_telem_table(data, fields){
         col_names_list_snake.push(name_sc)
     }
 
+    //add extra rows not from parsed telem
+    col_names_list.push(`\n  <th scope="col">Server Timestamp</th>`)
+    col_names_list.push(`\n  <th scope="col">Total Packets</th>`)
+    
+
     //data points for the table
     for(col in col_names_list_snake){
         //if data is a thing and not undefined
@@ -119,6 +133,21 @@ function gen_telem_table(data, fields){
         }
        
         data_points_list.push(`\n  <td>${data_point}</td>`) 
+    }
+
+    //add data not from parsed data
+    if (data){
+        var datetime = data["date_added"]
+        let options = {timeZone: 'UTC', timeStyle: "medium", year: 'numeric', month: 'short', day: 'numeric'};
+        data_point = new Date(datetime).toLocaleString(options)
+        data_points_list.push(`\n  <td>${data_point}</td>`) 
+    
+        data_points_list.push(`\n  <td>${Object.size(global_parsed_data)}</td>`) 
+    } else {
+        var data_point = "No Data Avaliable"
+        data_points_list.push(`\n  <td>${data_point}</td>`) 
+
+        data_points_list.push(`\n  <td>${0}</td>`) 
     }
 
     //combine lables and data points
@@ -325,7 +354,10 @@ async function createOrUpdateGraphs(data, flight_info){
             //push new data to the chart
             for (i in data){
                 let datetime_stamp = data[i]["date_added"]
-                let time_stamp = datetime_stamp.replace("Z", "").split("T")[1].split(":").slice(0, 2).join(":")
+
+                let options = {timeZone: 'UTC',  year: false, month: 'short', day: 'numeric'};
+
+                let time_stamp = new Date(datetime_stamp).toLocaleString(navigator.language, {hour: '2-digit', minute:'2-digit'})
 
 
                 data_point = data[i][data_field]
