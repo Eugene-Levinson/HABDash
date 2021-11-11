@@ -77,7 +77,7 @@ async function generate_tables(con){
         sql_code = `CREATE TABLE flights (
             flight_name varchar(255),
             user_uid int NOT NULL,
-            msg_descriptor varchar(255),
+            description varchar(255),
             last_edited DATETIME,
             last_data_entry DATETIME,
             lat_field_name varchar(255),
