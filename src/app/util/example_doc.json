@@ -1,0 +1,44 @@
+{
+    "flight_name": "tumble",
+    "description": "Just another test flight",
+    "lat_field_name": "Lat",
+    "lon_field_name": "Lon",
+    "fields": [
+        {
+            "field_name": "Flight name",
+            "field_type": "str",
+            "chart_data": false,
+            "field_order": 0
+        },
+
+        {
+            "field_name": "Lat",
+            "field_type": "str",
+            "chart_data": true,
+            "field_order": 1
+        },
+
+        {
+            "field_name": "Lon",
+            "field_type": "str",
+            "chart_data": true,
+            "field_order": 2
+        },
+
+        {
+            "field_name": "Alt",
+            "field_type": "int",
+            "chart_data": true,
+            "field_order": 3
+        },
+
+        {
+            "field_name": "Temp",
+            "field_type": "int",
+            "chart_data": false,
+            "field_order": 4
+        }
+    ]
+}
+
+

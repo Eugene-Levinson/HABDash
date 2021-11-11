@@ -233,3 +233,53 @@ module.exports.flight = async function(req, res){
         conn.awaitEnd()
     }
 }
+
+//Add new flight
+module.exports.add_flight = async function(req, res){
+    try{
+        //create a new connection to the database
+        var conn = await database_util.connectdb(secrets.DB_HOST, secrets.DB_USER, secrets.DB_PASSWORD, secrets.DB_NAME)
+        
+        //create a new instance of a user object
+        var user = new data_models.User(conn)
+
+        //get the auth_cookie_id
+        var auth_cookie_id = req.cookies.auth_id
+        
+        //verify the user
+        var valid_cookie = await user.valid_auth_cookie(auth_cookie_id)
+
+        
+
+        if (valid_cookie){
+            authenticated = true
+
+            await user.create_from_cookie(auth_cookie_id)
+
+            var responce_data = {}
+            responce_data.authenticated = authenticated
+            responce_data.user_data = user.get_all_user_data()
+
+
+            res.status(200)
+            res.render(PROJECT_DIR + "/src/app/static/views/templates/add_flight.html", {data: responce_data})
+
+        } else {
+            var authenticated = false
+            var responce_data = {}
+            responce_data.authenticated = authenticated
+
+            res.status(200)
+            res.render(PROJECT_DIR + "/src/app/static/views/templates/add_flight.html", {data: responce_data})
+        }
+        
+
+    } catch(e){
+        console.log(e)
+        res.send(500)
+
+    } finally{
+        //close connection
+        conn.awaitEnd()
+    }
+}

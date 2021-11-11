@@ -22,6 +22,8 @@ router.get("/login", asyncHandler(navigation_handler.loginPage));
 router.get("/dashboard", asyncHandler(navigation_handler.dashboard_page));
 //all flight pages
 router.get("/flights/:flightId", asyncHandler(navigation_handler.flight));
+//add flight page
+router.get("/add-flight", asyncHandler(navigation_handler.add_flight));
 
 //export everything out
 module.exports = router;

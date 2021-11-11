@@ -9,6 +9,7 @@ var PROJECT_DIR = process.env.PROJECT_DIR;
 //api get handlers
 var api_handler_get = require(PROJECT_DIR + "/src/app/handlers/apiGetHandler.js");
 var api_handler_put = require(PROJECT_DIR + "/src/app/handlers/apiPutHandler.js");
+var data_handler = require(PROJECT_DIR + "/src/app/handlers/dataHandler.js");
 
 
 //// GET ROUTES ////
@@ -24,6 +25,10 @@ router.get("/api/my-flights", asyncHandler(api_handler_get.get_user_flights));
 
 //// PUT ROUTES ////
 router.put("/api/submit-telem", asyncHandler(api_handler_put.telem_reciever));
+
+
+//// POST ROUTES ////
+router.post("/api/add-flight", asyncHandler(data_handler.add_flight))
 
 
 
