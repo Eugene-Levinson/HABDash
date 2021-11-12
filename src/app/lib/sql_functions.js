@@ -254,8 +254,16 @@ async function get_raw_flight_data(conn, flight_name){
 
 async function get_parsed_flight_data(conn, table_name, flight_name, flight_col){
     try{
-        
-        sql_code = `SELECT * FROM ${table_name} WHERE ${flight_col}=${conn.escape(flight_name)} ORDER BY date_added DESC`
+        // query to check if table table_name exists if not then return null as no data has ever been parsed
+        sql_code = `SELECT * FROM information_schema.tables WHERE table_name=${conn.escape(table_name)}`
+        var table_exists = await send_sql(conn, sql_code)
+
+        if (table_exists.length == 0){
+            return null
+        }
+
+        // select data from table
+        var sql_code = `SELECT * FROM ${table_name} WHERE ${flight_col}=${conn.escape(flight_name)} ORDER BY date_added DESC`
         var parsed = await send_sql(conn, sql_code)
 
         if (parsed == "" || parsed == undefined || parsed == {}){
