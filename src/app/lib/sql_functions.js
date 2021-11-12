@@ -254,6 +254,7 @@ async function get_raw_flight_data(conn, flight_name){
 
 async function get_parsed_flight_data(conn, table_name, flight_name, flight_col){
     try{
+        
         sql_code = `SELECT * FROM ${table_name} WHERE ${flight_col}=${conn.escape(flight_name)} ORDER BY date_added DESC`
         var parsed = await send_sql(conn, sql_code)
 
@@ -326,6 +327,50 @@ async function gen_insert_data_query(conn, colums, values, table_name){
     }
 }
 
+async function new_flight_record(conn, user_uid, flight_name,  description, lat_field_name, lon_field_name){
+    try{
+        var date_now = new Date().toISOString().slice(0, 19).replace('T', ' ');
+
+        var sql_code = `INSERT INTO flights (flight_name, user_uid, description, last_edited, lat_field_name, lon_field_name) VALUES (${conn.escape(flight_name)}, ${conn.escape(user_uid)}, ${conn.escape(description)}, "${date_now}", ${conn.escape(lat_field_name)}, ${conn.escape(lon_field_name)})`
+
+        await send_sql(conn, sql_code)
+
+    } catch(e){
+        console.log(e)
+        throw new Error("NewFlightRecordError")
+    }
+}
+
+async function remove_flight_config(conn, flight_name){
+    try{
+        console.log(flight_name)
+        var sql_code = `DELETE FROM data_fields WHERE flight_name=${conn.escape(flight_name)}`
+
+        await send_sql(conn, sql_code)
+
+    } catch(e){
+        console.log(e)
+        throw new Error("RemoveFlightConfigError")
+    }
+}
+
+async function add_flight_config(conn, flight_config){
+    try{
+
+        //for each field in fields create sql_code and send to send_sql
+        //the query will insert the daya into data_fields table
+        for (i in flight_config.fields){
+            var sql_code = `INSERT INTO data_fields (flight_name, field_name, field_type, field_order, chart_data) VALUES (${conn.escape(flight_config.flight_name)}, ${conn.escape(flight_config.fields[i].field_name)}, ${conn.escape(flight_config.fields[i].field_type)}, ${conn.escape(flight_config.fields[i].field_order)}, ${conn.escape(flight_config.fields[i].chart_data)})`
+
+            await send_sql(conn, sql_code)
+        }
+
+    } catch(e){
+        console.log(e)
+        throw new Error("AddFlightConfig")
+    }
+}
+
 
 
 
@@ -348,3 +393,6 @@ module.exports.gen_make_table_query = gen_make_table_query
 module.exports.gen_insert_data_query = gen_insert_data_query
 module.exports.get_raw_flight_data = get_raw_flight_data
 module.exports.get_parsed_flight_data = get_parsed_flight_data
+module.exports.new_flight_record = new_flight_record
+module.exports.remove_flight_config = remove_flight_config
+module.exports.add_flight_config = add_flight_config

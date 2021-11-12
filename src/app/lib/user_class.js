@@ -150,6 +150,43 @@ module.exports.User = class {
             throw new Error("GetUserFlightsError")
         }
     }
+
+    async insert_new_flight(flight_config){
+        try{
+            await database_util.new_flight_record(this.db_conn, this.UID, flight_config.flight_name, flight_config.description, flight_config.lat_field_name, flight_config.lon_field_name)
+            
+        } catch(e){
+            console.log(e)
+            throw new Error("InsertNewFlightError")
+        }
+    }
+
+    async remove_flight_config(flight_name){
+        try{
+            await database_util.remove_flight_config(this.db_conn, flight_name)
+
+        } catch(e){
+            console.log(e)
+            throw new Error("RemoveFlightConfigError")
+        }
+    }
+
+    async update_flight_config(flight_config){
+        try{
+                
+            //remove previous flight config
+            await this.remove_flight_config(flight_config.flight_name)
+
+            //add new flight config
+            await database_util.add_flight_config(this.db_conn, flight_config)
+
+            
+        } catch(e){
+            console.log(e)
+            throw new Error("AddFlightConfigError")
+        }
+
+    }
     
 
 }

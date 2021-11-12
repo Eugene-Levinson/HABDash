@@ -301,24 +301,54 @@ module.exports.loginUser = async function(req, res){
         var responce_data = {};
         responce_data.errors = []
 
+        //create a new connection to the database
+        var conn = await database_util.connectdb(secrets.DB_HOST, secrets.DB_USER, secrets.DB_PASSWORD, secrets.DB_NAME)
+        
+        //create a new instance of a user object
+        var user = new data_models.User(conn)
+
+        //get the auth_cookie_id
+        var auth_cookie_id = req.cookies.auth_id
+        
+        //verify the user
+        var valid_cookie = await user.valid_auth_cookie(auth_cookie_id)
+        
+        if (!valid_cookie) {
+            responce_data.errors.push("You are not logged in")
+            res.status(401)
+            res.send(responce_data)
+
+            return
+        }
+
+        // create user object from auth_cookie_id
+        await user.create_from_cookie(auth_cookie_id)
+
+
         var field_orders = []
 
         var allowed_field_types = ["str", "int", "float"]
-
         // get payload from request
         var payload_doc = req.body;
 
         
+        
+        /// json validation ///
 
         //check that flight_name field exists
         if (payload_doc.flight_name == undefined || payload_doc.flight_name == "" || payload_doc.flight_name == null) {
             responce_data.errors.push("'flight_name' is empty or undefined")
-        }
+
 
         // check datatype of flight_name
-        if (typeof payload_doc.flight_name != "string"){
+        } else if (typeof payload_doc.flight_name != "string"){
             responce_data.errors.push("'flight_name' is not a string")
+        
+        // check that no such flight exists
+        } else if (await database_util.check_flight_exists(conn, payload_doc.flight_name)) {
+            responce_data.errors.push("Flight with such name already exists")
         }
+
 
         // check that lat_field_name exists
         if (payload_doc.lat_field_name == undefined || payload_doc.lat_field_name == "" || payload_doc.lat_field_name == null) {
@@ -404,13 +434,25 @@ module.exports.loginUser = async function(req, res){
             }
 
         }
-
-        console.log(payload_doc.flight_name)
-        console.log(typeof payload_doc.flight_name)
         
         if (responce_data.errors.length != 0){
             res.status(406)
+
         } else {
+
+            //start the db transaction
+            await conn.awaitBeginTransaction()
+
+            //create new flight record
+            await user.insert_new_flight(payload_doc)
+
+            //add or update flight config
+            await user.update_flight_config(payload_doc)
+
+
+            // commit db changes
+            await conn.awaitCommit()
+
             res.status(200)
         }
         
@@ -425,10 +467,9 @@ module.exports.loginUser = async function(req, res){
 
         res.send(responce_data)
 
+    } finally {
+        //close the connection
+        conn.awaitEnd()
     }
 
  }
-
-    // } finally {
-    //     //conn.awaitEnd()
-    // }

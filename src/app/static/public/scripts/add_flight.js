@@ -62,6 +62,10 @@ async function add_new_flight(){
 
         } else if (response.status == 400) {
             alert_box.innerHTML = get_alert_html("Error occured when processing your doc. Make sure your JSON syntax is correct", "warning");
+        
+        } else if (response.status == 401){
+            alert_box.innerHTML = get_alert_html("You have to be logged in to add a flight", "danger");
+        
         } else {
             console.error("File upload failed");
             console.error(response);
