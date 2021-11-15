@@ -28,7 +28,10 @@ async function load_dashboard_data() {
         // check if my_flights is empty
         if (my_flights.length == 0 || my_flights == null || my_flights == undefined) {
             let main_body = document.getElementById('main-body');
-            main_body.innerHTML = "You don't have any flights. Create your first one"
+            main_body.innerHTML = `<p>You don't have any flights. Create your first one</p>
+                                    <a href="/add-flight" class="btn btn-warning" role="button" >Create New Flight</a>`
+
+            document.getElementById("left-add-flight-button").innerHTML = ""
             return
 
         }
@@ -36,6 +39,7 @@ async function load_dashboard_data() {
         let main_body = document.getElementById('main-body');
 
         var flight_info;
+
         // for every one of my flights
         for (i in my_flights){
 
