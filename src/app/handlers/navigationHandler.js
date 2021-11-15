@@ -269,8 +269,8 @@ module.exports.add_flight = async function(req, res){
             var responce_data = {}
             responce_data.authenticated = authenticated
 
-            res.status(200)
-            res.render(PROJECT_DIR + "/src/app/static/views/templates/add_flight.html", {data: responce_data})
+            res.status(403)
+            res.send("Not authenticated")
         }
         
 
