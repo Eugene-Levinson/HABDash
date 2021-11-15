@@ -60,21 +60,27 @@ async function load_dashboard_data() {
             } finally {
 
                 // display a card with that flight
-                main_body.innerHTML += `<a href="flights/${my_flights[i]}" style="background-color:white; margin: 2px; ">
+                main_body.innerHTML += `<div class="row">
+                <div class="col-xl-10 mt-md-0 mt-3">
+                <a href="flights/${my_flights[i]}" style="background-color:white; margin: 2px; ">
                             <article class="flight-article" style=" width: 100%; min-height: 8ch; display: flex; align-items: center; "> 
                                 <div style="font-size: large; color: black; padding-left: 10px; width: 100%; word-wrap: break-word;">
-                                    <div class="row">
-                                        <div class="col-xl-4 mt-md-0 mt-3">
+                                    <div class="flex-row">
+                                        <div class="col-xl-4 mt-md-0 mt-3 p-2">
                                             ${my_flights[i]} 
                                         </div>
-                                        <div class="col-xl-8 mt-md-0 mt-3 ">
+                                        <div class="col-xl-8 mt-md-0 mt-3 p-2">
                                             <small>Description: ${flight_info.description}</small>
                                         </div>
                                     </div>
                                 </div>
                             </article>
                         </a>
-                        <a href="/" class="btn btn-warning" role="button" style="margin-bottom: 3ch; margin-top: 1ch;" >Edit Doc</a>`
+                        </div>
+                        <div class="col-xl-2 mt-md-0 mt-3" style="display: flex; align-items: center;">
+                        <a href="/" class="btn btn-warning" role="button" style="" >Edit Doc</a>
+                        </div>
+                        </div>`
             }
             
             
