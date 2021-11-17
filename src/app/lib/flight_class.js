@@ -166,3 +166,7 @@ module.exports.Flight = class {
 
 
 }
+
+module.exports.get_parsed_table_name = function(flight_name){
+    return `parsed_telem_${flight_name}`
+}

@@ -1,3 +1,46 @@
+async function delete_flight(flight_name){
+    try{
+        var alert_box = document.getElementById("alerts");
+
+        if (!confirm(`Are you sure you want to delete flight '${flight_name}'?`)){
+            return
+
+        } else {
+
+            // send the data
+            var response = await fetch(`/api/delete-flight/${flight_name}`, {
+                method: "POST",
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({})
+            });
+            
+            // check that the response is ok
+            if (response.ok){
+                alert_box.innerHTML = get_alert_html("Your flight has been successfully deleted", "success");
+
+            } else if (response.status == 401){
+                alert_box.innerHTML = get_alert_html("You are not authenticated", "danger");
+
+            } else if (response.status == 404){
+                alert_box.innerHTML = get_alert_html("This flight doesn't exist, or you don't own it", "danger");
+            
+            } else {
+                console.error("Failed to delete flight");
+                console.error(response);
+
+                alert_box.innerHTML = get_alert_html("Failed to delete flight", "danger")
+            }
+
+        }
+
+    } catch (err){
+        console.error(err);
+        alert_box.innerHTML = get_alert_html("An error occured. Please refresh the page and try again", "danger");
+    }
+
+
+}
+
 async function load_dashboard_data() {
     try{
         let url = 'https://www.habdash.org/api/my-flights';
@@ -65,7 +108,7 @@ async function load_dashboard_data() {
 
                 // display a card with that flight
                 main_body.innerHTML += `<div class="row">
-                <div class="col-xl-10 mt-md-0 mt-3">
+                <div class="col-xl-9 mt-md-0 mt-3">
                 <a href="flights/${my_flights[i]}" style="background-color:white; margin: 2px; ">
                             <article class="flight-article" style=" width: 100%; min-height: 8ch; display: flex; align-items: center; "> 
                                 <div style="font-size: large; color: black; padding-left: 10px; width: 100%; word-wrap: break-word;">
@@ -81,8 +124,9 @@ async function load_dashboard_data() {
                             </article>
                         </a>
                         </div>
-                        <div class="col-xl-2 mt-md-0 mt-3" style="display: flex; align-items: center;">
+                        <div class="col-xl-3 mt-md-0 mt-3" style="display: flex; align-items: center;">
                         <a href="/edit-flight/${my_flights[i]}" class="btn btn-warning" role="button" style="" >Edit Doc</a>
+                        <button type="button" class="btn btn-danger" style="margin: 5px;" onclick="delete_flight('${my_flights[i]}')">Delete Flight</button>
                         </div>
                         </div>`
             }

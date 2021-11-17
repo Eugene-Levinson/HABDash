@@ -30,6 +30,7 @@ router.put("/api/edit-flight/:flightname", asyncHandler(api_handler_put.edit_fli
 
 //// POST ROUTES ////
 router.post("/api/add-flight", asyncHandler(data_handler.add_flight))
+router.post("/api/delete-flight/:flightname", asyncHandler(data_handler.delete_flight))
 
 
 

@@ -473,3 +473,79 @@ module.exports.loginUser = async function(req, res){
     }
 
  }
+
+ //handler that deletes a flight
+ module.exports.delete_flight = async function(req, res){
+     try{
+        var responce_data = {};
+        responce_data.errors = []
+
+        var req_flight_name = req.params.flightname
+
+        //create a new connection to the database
+        var conn = await database_util.connectdb(secrets.DB_HOST, secrets.DB_USER, secrets.DB_PASSWORD, secrets.DB_NAME)
+        
+        //create a new instance of a user object
+        var user = new data_models.User(conn)
+
+        //get the auth_cookie_id
+        var auth_cookie_id = req.cookies.auth_id
+        
+        //verify the user
+        var valid_cookie = await user.valid_auth_cookie(auth_cookie_id)
+        
+        if (!valid_cookie) {
+            responce_data.errors.push("You are not logged in")
+            res.status(401)
+            res.send(responce_data)
+
+            return
+        }
+
+        // create user object from auth_cookie_id
+        await user.create_from_cookie(auth_cookie_id)
+
+        var user_flights = await user.get_flights()
+
+        //check that the user owns the flight
+        if (!user_flights.includes(req_flight_name)){
+            responce_data.errors.push("You do not own this flight or it does not exists")
+
+            res.status(404)
+            res.send(responce_data)
+            return
+        }
+
+
+        //start the db transaction
+        await conn.awaitBeginTransaction()
+
+        //delete the flight
+        await database_util.remove_flight(conn, req_flight_name)
+
+        // commit db changes
+        await conn.awaitCommit()
+
+        res.status(200)
+        res.send("All good")
+
+        console.log("Delete flight")
+
+        
+
+
+
+     } catch(e) {
+        console.log(e)
+
+        responce_data.errors = ["Internal server error has occured. Please try again later and if the problem has not been resolved, please contact support"] 
+
+        res.status(500)
+
+        res.send(responce_data)
+
+     } finally {
+        conn.awaitEnd()
+
+     }
+ }

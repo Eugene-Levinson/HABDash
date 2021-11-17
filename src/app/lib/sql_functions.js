@@ -1,6 +1,7 @@
 const sqlite3 = require('sqlite3').verbose();
 var PROJECT_DIR = process.env.PROJECT_DIR  
 var secrets = require(PROJECT_DIR + '/src/app/config/secrets')
+const flight_class = require(PROJECT_DIR + '/src/app/lib/flight_class.js')
 
 //var mysql = require('mysql')
 const mysql = require(`mysql-await`);
@@ -379,7 +380,30 @@ async function add_flight_config(conn, flight_config){
     }
 }
 
+// function to remove a flight based on the flight_name
+async function remove_flight(conn, flight_name){
+    try{
+        let parsed_data_table = flight_class.get_parsed_table_name(flight_name)
 
+        var sql_code = `DELETE FROM flights where flight_name=${conn.escape(flight_name)}`
+        await send_sql(conn, sql_code)
+
+        sql_code = `DELETE FROM data_fields where flight_name=${conn.escape(flight_name)}`
+        await send_sql(conn, sql_code)
+
+        sql_code = `DELETE FROM raw_flight_data where flight_name=${conn.escape(flight_name)}`
+        await send_sql(conn, sql_code)
+
+        sql_code = `DELETE FROM ${parsed_data_table} where flight_name=${conn.escape(flight_name)}`
+        await send_sql(conn, sql_code)
+
+    } catch(e){
+        console.log(e)
+        throw new Error("RemoveFlightConfig")
+
+    }
+
+}
 
 
 
@@ -404,3 +428,4 @@ module.exports.get_parsed_flight_data = get_parsed_flight_data
 module.exports.new_flight_record = new_flight_record
 module.exports.remove_flight_config = remove_flight_config
 module.exports.add_flight_config = add_flight_config
+module.exports.remove_flight = remove_flight
