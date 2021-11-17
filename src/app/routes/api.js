@@ -25,6 +25,7 @@ router.get("/api/my-flights", asyncHandler(api_handler_get.get_user_flights));
 
 //// PUT ROUTES ////
 router.put("/api/submit-telem", asyncHandler(api_handler_put.telem_reciever));
+router.put("/api/edit-flight/:flightname", asyncHandler(api_handler_put.edit_flight));
 
 
 //// POST ROUTES ////

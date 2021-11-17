@@ -82,7 +82,7 @@ async function load_dashboard_data() {
                         </a>
                         </div>
                         <div class="col-xl-2 mt-md-0 mt-3" style="display: flex; align-items: center;">
-                        <a href="/" class="btn btn-warning" role="button" style="" >Edit Doc</a>
+                        <a href="/edit-flight/${my_flights[i]}" class="btn btn-warning" role="button" style="" >Edit Doc</a>
                         </div>
                         </div>`
             }
