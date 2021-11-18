@@ -1,5 +1,89 @@
-<form>
-    <input type="file" id="payload-doc" name="filename">
-</form>
+<div class="row" style="margin-top: 10px; margin-bottom: 30px;">
+    <div class="col-xl-3 mt-md-0 mt-3">
+    </div>
+    <div class="col-xl-6 mt-md-0 mt-3">
+        <form>
+            <input type="file" id="payload-doc" name="filename">
+        </form>
+        
+        <button onclick="add_new_flight()" type="button" class="btn btn-primary" style="margin-top: 10px">Submit payload doc</button>
+        
+    </div>
+    <div class="col-xl-3 mt-md-0 mt-3">
+    </div>
+</div>
 
-<button onclick="add_new_flight()" type="button" class="btn btn-primary" style="margin-top: 10px">Submit payload doc</button>
+<div class="row" style="margin-top: 10px;">
+    <div class="col-xl-3 mt-md-0 mt-3">
+    </div>
+    <div class="col-xl-6 mt-md-0 mt-3">
+        <h3>
+            Whats a payload doc?
+        </h3>
+        <p>
+            A payload doc (or a flight doc) is a json file that tells the HABDash server how to process
+            your flight data. It allowes you to configure which data you would like to be charted and later
+            on other configuration will also be avalibale throught the payload doc
+        </p>
+
+        <h3>
+            Do I need a payload doc?
+        </h3>
+        <p>
+            Yes, without a payload doc no flight page will be generated.
+        </p>
+
+        <h3>
+            Example of a payload doc
+        </h3>
+        <pre> 
+            <code>
+{
+    "flight_name": "tumble",
+    "description": "Just another test flight",
+    "lat_field_name": "Lat",
+    "lon_field_name": "Lon",
+    "fields": [
+        {
+            "field_name": "Flight name",
+            "field_type": "str",
+            "chart_data": false,
+            "field_order": 0
+        },
+
+        {
+            "field_name": "Lat",
+            "field_type": "str",
+            "chart_data": true,
+            "field_order": 1
+        },
+
+        {
+            "field_name": "Lon",
+            "field_type": "str",
+            "chart_data": true,
+            "field_order": 2
+        },
+
+        {
+            "field_name": "Alt",
+            "field_type": "int",
+            "chart_data": true,
+            "field_order": 3
+        },
+
+        {
+            "field_name": "Temp",
+            "field_type": "int",
+            "chart_data": false,
+            "field_order": 4
+        }
+    ]
+}                           
+            </code>
+        </pre>
+    </div>
+    <div class="col-xl-3 mt-md-0 mt-3">
+
+    </div>
+</div>
