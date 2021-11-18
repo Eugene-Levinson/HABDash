@@ -1,71 +1,178 @@
 
-
 # HABDash
 
-This is the repository that holds all of my source code for my A-level CS NEA
-
-## Backlog (stuff to adjust when I have time)
-Backlog of ideas/things to do here: https://miro.com/app/board/o9J_lEZSHis=/
-
+The HABDash project was started as my Computer Science A-Level coursework. The goal is to provide a way to visualise telemetry and data recieved from weather balloons or any other payloads. The hope is to provide an alternative solution to the currently existing ones, that is simple, dynamic and scales well on mobile devices.
 
 <br>
 
 
 # Server setup and deployment
 
-This section describes the step by step process of setting up the environment and deplying the HABDash webserver. This is not something that a user of HABDash would ever need to do but for those who want to set a copy of this up for some reason it might be usefull.
+This project was developed on Ubuntu 20.04 
 
-**Please note**: that this set up is for Ubuntu 20.04 
+<br> 
 
-## Install git
+## Server Setup
 
-`sudo apt-get install git`
+``` bash
+sudo apt-get update
+```
 
+### Install git
 
+``` bash
+sudo apt-get install git 
+```
 
-## Clone the repository
+### Clone the repository
 
-`git@github.com:Eugene-Levinson/HABDash.git`
+``` bash
+git clone git@github.com:Eugene-Levinson/HABDash.git
+```
 
-
-## Set up direnv
+### Set up direnv
   
-`sudo apt-get install direnv`  
+``` bash
+sudo apt-get install direnv
+```  
 
-Add the folwing to `~/.bashrc`  
-`eval "$(direnv hook bash)"`
+Add the folwing to your `~/.bashrc`  
 
-If you are not using bash refere to direnv documentation
+``` bash
+eval "$(direnv hook bash)"
+```
 
-`cd HABDash`  
-`direnv allow .`
+### Set up project directory
 
+``` bash
+cd HABDash
+```
 
-## Install all other required dependencies
+### Install dependencies
   
-`sudo install_dep` (Uses apt as package manager)
+``` bash
+sudo ./install_dep
+npm install
+```
 
-## Install node packages
+<br>
 
-`npm install`
+## Database setup
+
+### Secure DB installation
+
+``` bash
+sudo mysql_secure_installation
+```
+
+### Login to DB with root user
+
+``` bash
+sudo mysql
+```
+
+### Create a user to access the DB
+
+``` sql
+CREATE USER '<username>'@'<host-to-be-accessed-from>' IDENTIFIED BY '<password>';
+```
+
+### Grant privileges to the user
+``` sql
+GRANT CREATE, ALTER, INSERT, UPDATE, DELETE, SELECT, REFERENCES on *.* TO '<username>'@'<host-to-be-accessed-from>' WITH GRANT OPTION;
+```
+
+### Flush privileges and exit
+
+```sql
+FLUSH PRIVILEGES;
+```
+
+```sql
+exit
+```
+
+### Enable mysql server on startup
+
+```bash
+sudo systemctl enable mysql.service
+```
+
+<br>
+
+## SSL Certificate Setup
+
+You have to aquire a SSL certificate for the server.
+You can aquire one for free from [LetsEncrypt.org](https://letsencrypt.org/getting-started/)
+
+Make sure to save the location of your certificate. The path to the certificate will need to be added to the secret manager later (Cloud setup step)
+
+<br>
+
+## Cloud Setup
+
+This project utilises several google cloud services. The following setup is required to host this platform.
+
+1. Make sure that you have created a GCP project. 
+2. Enable Maps JavaScript API.
+3. Generate an auth token (not a service account!) and make sure that the JavaScript Map API is added as a service for the token.
+4. Enable Secret Manager API.
+
+Make sure the following secrets are created:
+
+- SSL_KEY - file path to the SSL Key file
+- SSL_CERT - file path to the SSL Certificate file
+- DB_HOST - database host
+- DB_USER - database user
+- DB_PASSWORD - database password
+- DB_NAME - database name
+- MAPS_KEY - javascript maps API token
+
+<br>
+
+## Setup GCS in the project directory
+
+### Next few steps set up service account on the server. They should be completed only after Cloud Setup has been done
+
+### Go into the project directory
+
+``` bash
+cd ~/HABDash
+```
+
+### Make sure no old service account are enabled
+
+``` bash
+cloud auth revoke --all
+```
+
+### Set up gcp service account
+
+``` bash
+./config <gcp_project_name>
+```
+
+### Allow direnv
+
+``` bash
+direnv allow .
+```
+
+### Create HABDash main DB and all required tables
+
+``` bash
+node utils/createdb.js
+```
+
+<br>
 
 ## Start the server
 
-`sudo node src/app/app.js`
+### Typical run command
 
-
-# Cloud setup
-Create an project in google cloud
-Enable mpas api
-Generate token for maps api
-Add maps token to secrets
-Make sure all secrets are added to the secrets manager
-
-Make sure that the GOOGLE_APPLICATION_CREDENTIALS is unset
-Make sure all previous accounts are unset `gcloud auth revoke --all`
-run `gcloud auth login` 
-run config < project_name >
-
+``` bash
+nohup sudo --preserve-env node src/app/app.js -m prod &
+```
 
 Optional paramters:  
 `-m` => mode `dev` or `prod` (default set in src/app/config/common.js)  
