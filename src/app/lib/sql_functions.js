@@ -394,8 +394,12 @@ async function remove_flight(conn, flight_name){
         sql_code = `DELETE FROM raw_flight_data where flight_name=${conn.escape(flight_name)}`
         await send_sql(conn, sql_code)
 
-        sql_code = `DELETE FROM ${parsed_data_table} where flight_name=${conn.escape(flight_name)}`
-        await send_sql(conn, sql_code)
+        if (await check_table_exists(conn, flight_name)){
+            sql_code = `DELETE FROM ${parsed_data_table} where flight_name=${conn.escape(flight_name)}`
+            await send_sql(conn, sql_code)
+        }
+
+
 
     } catch(e){
         console.log(e)
@@ -403,6 +407,24 @@ async function remove_flight(conn, flight_name){
 
     }
 
+} 
+
+// fucntion to check if table exists
+async function check_table_exists(conn, table_name){
+    try{
+        var sql_code = `SELECT * FROM information_schema.tables WHERE table_name=${conn.escape(table_name)}`
+        var table_exists = await send_sql(conn, sql_code)
+
+        if (table_exists.length == 0){
+            return false
+            
+        }
+        return true
+
+    } catch(e){
+        console.log(e)
+        throw new Error("CheckTableExists")
+    }
 }
 
 
@@ -429,3 +451,4 @@ module.exports.new_flight_record = new_flight_record
 module.exports.remove_flight_config = remove_flight_config
 module.exports.add_flight_config = add_flight_config
 module.exports.remove_flight = remove_flight
+module.exports.check_table_exists = check_table_exists
