@@ -14,8 +14,11 @@
         <li class="nav-item <% if (data.current == 'dashboard') { %> <%= 'active' %>    <% }%>">
           <a class="nav-link" href="/dashboard">Dashboard</a>
         </li>
-        <li class="nav-item <% if (data.current == 'about') { %> <%= 'active' %>    <% }%>">
-          <a class="nav-link" href="#">About</a>
+      </ul>
+
+      <ul class="navbar-nav ml-auto">
+        <li class="nav-item" style="margin-top: 5px; margin-bottom: 5px; margin-right: 5px;">
+          <script type='text/javascript' src='https://storage.ko-fi.com/cdn/widget/Widget_2.js'></script><script type='text/javascript'>kofiwidget2.init('Support Us on Ko-fi', '#795bc4', 'O5O471ZV3');kofiwidget2.draw();</script> 
         </li>
       </ul>
       
@@ -26,7 +29,7 @@
         </div>
       <% } else {%>
         <div class="btn-group">
-          <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" data-display="static" aria-haspopup="true" aria-expanded="false">
+          <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" data-display="static" aria-haspopup="true" aria-expanded="false" style="background-color: #5cb85c;">
             Account
           </button>
           <div class="dropdown-menu dropdown-menu-lg-right">
