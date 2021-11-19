@@ -37,6 +37,8 @@ module.exports.homePage = async function(req, res){
             responce_data.authenticated = authenticated
             responce_data.user_data = user.get_all_user_data()
 
+            responce_data.current = "home"
+
 
             res.status(200)
             res.render(PROJECT_DIR + "/src/app/static/views/templates/index.html", {data: responce_data})
@@ -45,6 +47,8 @@ module.exports.homePage = async function(req, res){
             var authenticated = false
             var responce_data = {}
             responce_data.authenticated = authenticated
+
+            responce_data.current = "home"
 
             res.status(200)
             res.render(PROJECT_DIR + "/src/app/static/views/templates/index.html", {data: responce_data})
@@ -164,6 +168,8 @@ module.exports.loginPage = async function(req, res){
         var responce_data = {}
         responce_data.authenticated = authenticated
         responce_data.user_data = user.get_all_user_data()
+
+        responce_data.current = "dashboard"
 
 
         res.status(200)
