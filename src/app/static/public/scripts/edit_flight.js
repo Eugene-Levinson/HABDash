@@ -10,7 +10,7 @@ function get_alert_html(msg, type){
 }
 
 
-async function edit_new_flight(){
+async function edit_flight(){
     try{
         var alert_box = document.getElementById("alerts");
         var payload_doc = document.getElementById("payload-doc");
