@@ -143,7 +143,12 @@ cd ~/HABDash
 ### Make sure no old service account are enabled
 
 ``` bash
-cloud auth revoke --all
+gcloud auth revoke --all
+```
+
+### Auth into glcoud
+```bash
+gcloud auth login
 ```
 
 ### Set up gcp service account
@@ -161,7 +166,7 @@ direnv allow .
 ### Create HABDash main DB and all required tables
 
 ``` bash
-node utils/createdb.js
+node src/app/util/createdb.js
 ```
 
 <br>

@@ -25,7 +25,23 @@
 
 </head>
 
-<body>  
+<body> 
+    <script>
+        //get current url
+        var url = window.location.href;
+
+        //get the subdomain
+        var subdomain = url.split('.')[0];
+
+        //get path from url
+        var path = url.split('/')[3];
+
+        if (subdomain == "https://habdash"){
+            //redirect to
+            window.location = `https://www.habdash.org/${path}`;
+        }
+    </script> 
+    
         <div id="wrap">
 
             <%- include(process.env.PROJECT_DIR + '/src/app/static/views/partials/navbar.html', {data: data}); %>

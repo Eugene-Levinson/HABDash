@@ -102,6 +102,7 @@ async function generate_tables(con){
             flight_name varchar(255),
             field_name varchar(255),
             field_type varchar(255),
+            field_order varchar(255),
             chart_data BIT
         );`
 
